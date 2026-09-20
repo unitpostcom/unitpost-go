@@ -18,7 +18,10 @@ type Options struct {
 // Client is the Unitpost API client. Construct once, reuse everywhere.
 type Client struct {
 	Email         *Email
-	// NOTE (pre-launch): Sms is intentionally absent while SMS is unpublished.
+	// Sms is the SMS channel (beta, behind the launch gate). Wired in its GA
+	// shape; while a workspace's gate is off every call returns the same 404
+	// the REST surface does.
+	Sms           *Sms
 	Contacts      *Contacts
 	ContactFields *ContactFields
 	Segments     *Segments
@@ -37,6 +40,7 @@ func NewWithOptions(opts Options) *Client {
 	h := newHTTP(opts)
 	return &Client{
 		Email:         newEmail(h),
+		Sms:           &Sms{http: h},
 		Contacts:      &Contacts{http: h},
 		ContactFields: &ContactFields{http: h},
 		Segments:      &Segments{http: h},

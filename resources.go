@@ -32,6 +32,33 @@ func (x *Sms) List(ctx context.Context, params map[string]string) (any, error) {
 	return x.http.request(ctx, "GET", "/sms", q(params), nil, "")
 }
 
+// Brands lists SMS brands and their setup status. A brand is the business
+// identity carriers register before they approve a phone number, so this is what
+// to poll to answer "is SMS ready yet?": status says whether you or the carrier
+// is the blocker, and missing lists exactly what is still required. Read-only —
+// creating a brand is a paid carrier submission and is dashboard-only.
+func (x *Sms) Brands(ctx context.Context, params map[string]string) (any, error) {
+	return x.http.request(ctx, "GET", "/sms/brands", q(params), nil, "")
+}
+
+// Numbers lists SMS phone numbers. Only numbers with status "active" can send. A
+// ten_dlc number has no phone_number until carriers approve it, and a simulator
+// number only reaches verified test destinations. Read-only — requesting or
+// releasing a number is dashboard-only.
+func (x *Sms) Numbers(ctx context.Context, params map[string]string) (any, error) {
+	return x.http.request(ctx, "GET", "/sms/numbers", q(params), nil, "")
+}
+
+// SmsConsent reads a contact's SMS consent state and immutable consent history.
+func (x *Sms) SmsConsent(ctx context.Context, contactID string) (any, error) {
+	return x.http.request(ctx, "GET", "/contacts/"+enc(contactID)+"/sms-consent", nil, nil, "")
+}
+
+// RecordSmsConsent records an SMS consent change (opt-in or opt-out) for a contact.
+func (x *Sms) RecordSmsConsent(ctx context.Context, contactID string, body any) (any, error) {
+	return x.http.request(ctx, "POST", "/contacts/"+enc(contactID)+"/sms-consent", nil, body, "")
+}
+
 // Email is the channel root: send, batch, templates, campaigns, topics, domains.
 type Email struct {
 	http      *httpClient

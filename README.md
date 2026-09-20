@@ -15,4 +15,6 @@ data, err := client.Email.Send(ctx, map[string]any{
 })
 ```
 
+`client.Sms` is the SMS channel: **beta, behind the launch gate**. It is wired in its GA shape (Send, Get, List, Brands, Numbers, contact SMS consent); while your workspace's gate is off every call returns `404`.
+
 Docs: https://www.unitpost.com/docs

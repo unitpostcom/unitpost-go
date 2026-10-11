@@ -18,9 +18,8 @@ type Options struct {
 // Client is the Unitpost API client. Construct once, reuse everywhere.
 type Client struct {
 	Email         *Email
-	// Sms is the SMS channel (beta, behind the launch gate). Wired in its GA
-	// shape; while a workspace's gate is off every call returns the same 404
-	// the REST surface does.
+	// Sms is the SMS channel. Available on paid plans: on the free plan Send
+	// returns a 403 with code limit_reached; reads keep working.
 	Sms           *Sms
 	Contacts      *Contacts
 	ContactFields *ContactFields

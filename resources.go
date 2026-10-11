@@ -19,7 +19,7 @@ func q(params map[string]string) url.Values {
 	return out
 }
 
-// Sms is the SMS channel (beta).
+// Sms is the SMS channel (paid plans).
 type Sms struct{ http *httpClient }
 
 func (x *Sms) Send(ctx context.Context, body any) (any, error) {
@@ -27,6 +27,12 @@ func (x *Sms) Send(ctx context.Context, body any) (any, error) {
 }
 func (x *Sms) Get(ctx context.Context, id string) (any, error) {
 	return x.http.request(ctx, "GET", "/sms/"+enc(id), nil, nil, "")
+}
+
+// Update cancels a queued/scheduled SMS ({"cancel": true}, credit refunded)
+// or moves a scheduled one ({"scheduled_at": "<ISO 8601>"}).
+func (x *Sms) Update(ctx context.Context, id string, body any) (any, error) {
+	return x.http.request(ctx, "PATCH", "/sms/"+enc(id), nil, body, "")
 }
 func (x *Sms) List(ctx context.Context, params map[string]string) (any, error) {
 	return x.http.request(ctx, "GET", "/sms", q(params), nil, "")
@@ -132,6 +138,9 @@ func (x *Contacts) ListImports(ctx context.Context, params map[string]string) (a
 }
 func (x *Contacts) GetImport(ctx context.Context, id string) (any, error) {
 	return x.http.request(ctx, "GET", "/contacts/imports/"+enc(id), nil, nil, "")
+}
+func (x *Contacts) CancelImport(ctx context.Context, id string) (any, error) {
+	return x.http.request(ctx, "POST", "/contacts/imports/"+enc(id)+"/cancel", nil, nil, "")
 }
 
 // ContactFields are custom contact attributes.

@@ -5,12 +5,12 @@
 
 package generated
 
-// Why a message was skipped before reaching the carrier. `out_of_reach` — no
-// sender covers the recipient's country; `unsupported_country` — no compliance
-// rule for the country yet; `no_phone` — the contact has no SMS handle;
-// `opted_out` — STOP / suppression / unreachable; `no_marketing_consent` —
-// marketing without express consent; `quiet_hours_deferred` — delayed to the
-// recipient's local window; `sender_not_active` — the sender lost approval.
+// Why a message was skipped before reaching the carrier. `out_of_reach`: no
+// sender covers the recipient's country; `unsupported_country`: no compliance
+// rule for the country yet; `no_phone`: the contact has no SMS handle;
+// `opted_out`: STOP / suppression / unreachable; `no_marketing_consent`:
+// marketing without express consent; `quiet_hours_deferred`: delayed to the
+// recipient's local window; `sender_not_active`: the sender lost approval.
 type SmsSkipReason string
 
 const (
@@ -28,12 +28,12 @@ var SmsSkipReasonValues = []SmsSkipReason{SmsSkipReasonOutOfReach, SmsSkipReason
 
 // SmsError is the `SmsError` object from the public API.
 type SmsError struct {
-	// Why a message was skipped before reaching the carrier. `out_of_reach` — no
-	// sender covers the recipient's country; `unsupported_country` — no compliance
-	// rule for the country yet; `no_phone` — the contact has no SMS handle;
-	// `opted_out` — STOP / suppression / unreachable; `no_marketing_consent` —
-	// marketing without express consent; `quiet_hours_deferred` — delayed to the
-	// recipient's local window; `sender_not_active` — the sender lost approval.
+	// Why a message was skipped before reaching the carrier. `out_of_reach`: no
+	// sender covers the recipient's country; `unsupported_country`: no compliance
+	// rule for the country yet; `no_phone`: the contact has no SMS handle;
+	// `opted_out`: STOP / suppression / unreachable; `no_marketing_consent`:
+	// marketing without express consent; `quiet_hours_deferred`: delayed to the
+	// recipient's local window; `sender_not_active`: the sender lost approval.
 	Code SmsSkipReason `json:"code"`
 	// Human-readable sentence for `code`.
 	Message string `json:"message"`
@@ -115,10 +115,12 @@ type SmsBrand struct {
 	// True when the 10DLC brand registration is approved.
 	TenDlcVerified bool `json:"ten_dlc_verified"`
 	TaxIdOnFile bool `json:"tax_id_on_file"`
-	// Active (non-released) phone numbers backed by this brand.
+	// Non-released senders on this brand (phone numbers and Sender ID countries, any
+	// status).
 	NumberCount int64 `json:"number_count"`
-	// False once the brand is locked (carrier-approved or in review). Locked brands
-	// can only be corrected when the carrier asks.
+	// False once the brand is locked: carriers approved or are reviewing its 10DLC
+	// registration, or senders are registered with its details. Locked brands are
+	// corrected only when carriers ask.
 	Editable bool `json:"editable"`
 	CreatedAt string `json:"created_at"`
 }
@@ -129,7 +131,7 @@ type SmsNumber struct {
 	Object string `json:"object"`
 	// Prefixed number id, e.g. `snum_…`.
 	Id string `json:"id"`
-	// E.164 number. Null while a 10DLC registration is still in review — the number
+	// E.164 number. Null while a 10DLC registration is still in review; the number
 	// is assigned on approval.
 	PhoneNumber *string `json:"phone_number"`
 	// `long_code` is a local number issued outside the US (today: Canada, `country:
@@ -142,6 +144,8 @@ type SmsNumber struct {
 	// Only `active` numbers can send. One of: pending, action_required, active,
 	// rejected, released.
 	Status string `json:"status"`
+	// Informational: the workspace's first or primary number. Sends route by the
+	// recipient's country, not by this flag.
 	IsDefault bool `json:"is_default"`
 	// ISO-3166 alpha-2 country the number was issued in (`US` for toll-free and
 	// 10DLC, `CA` for a Canadian long code). Null until recorded.
@@ -157,7 +161,9 @@ type SmsNumber struct {
 	// What carriers approved this number to send. Required for approval; submitted
 	// with the number.
 	UseCase *SmsNumberUseCase `json:"use_case"`
-	// Set when status is `action_required` or `rejected`.
+	// Set when status is `action_required` (what to fix: carrier feedback, why a
+	// submission failed, or a request that never reached the registry) or
+	// `rejected`.
 	ActionRequiredReason *string `json:"action_required_reason"`
 	// Present on `sender_id` entries only. A Sender ID is ONE identity per brand
 	// enabled per country: the list still returns one entry per (Sender ID, country)

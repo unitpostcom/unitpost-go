@@ -39,7 +39,7 @@ func NewWithOptions(opts Options) *Client {
 	h := newHTTP(opts)
 	return &Client{
 		Email:         newEmail(h),
-		Sms:           &Sms{http: h},
+		Sms:           newSms(h),
 		Contacts:      &Contacts{http: h},
 		ContactFields: &ContactFields{http: h},
 		Segments:      &Segments{http: h},

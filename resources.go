@@ -19,8 +19,99 @@ func q(params map[string]string) url.Values {
 	return out
 }
 
-// Sms is the SMS channel (paid plans).
-type Sms struct{ http *httpClient }
+// Sms is the SMS channel (paid plans): send/list messages, plus the
+// channel-scoped Templates, Campaigns and Topics resources.
+type Sms struct {
+	http      *httpClient
+	Templates *SmsTemplates
+	Campaigns *SmsCampaigns
+	Topics    *SmsTopics
+}
+
+func newSms(h *httpClient) *Sms {
+	return &Sms{http: h, Templates: &SmsTemplates{http: h}, Campaigns: &SmsCampaigns{http: h}, Topics: &SmsTopics{http: h}}
+}
+
+// SmsTemplates are plain-text SMS bodies with {{variable}} placeholders.
+type SmsTemplates struct{ http *httpClient }
+
+func (x *SmsTemplates) List(ctx context.Context, params map[string]string) (any, error) {
+	return x.http.request(ctx, "GET", "/sms/templates", q(params), nil, "")
+}
+func (x *SmsTemplates) Create(ctx context.Context, body any) (any, error) {
+	return x.http.request(ctx, "POST", "/sms/templates", nil, body, "")
+}
+func (x *SmsTemplates) Get(ctx context.Context, id string) (any, error) {
+	return x.http.request(ctx, "GET", "/sms/templates/"+enc(id), nil, nil, "")
+}
+func (x *SmsTemplates) Update(ctx context.Context, id string, body any) (any, error) {
+	return x.http.request(ctx, "PATCH", "/sms/templates/"+enc(id), nil, body, "")
+}
+func (x *SmsTemplates) Delete(ctx context.Context, id string) (any, error) {
+	return x.http.request(ctx, "DELETE", "/sms/templates/"+enc(id), nil, nil, "")
+}
+
+// SmsCampaigns send a published SMS template to a segment. Create makes a
+// draft (omit sender_id for automatic routing); Send sends now or at
+// scheduled_at (pass nil for now); Delete archives.
+type SmsCampaigns struct{ http *httpClient }
+
+func (x *SmsCampaigns) List(ctx context.Context, params map[string]string) (any, error) {
+	return x.http.request(ctx, "GET", "/sms/campaigns", q(params), nil, "")
+}
+func (x *SmsCampaigns) Create(ctx context.Context, body any) (any, error) {
+	return x.http.request(ctx, "POST", "/sms/campaigns", nil, body, "")
+}
+func (x *SmsCampaigns) Get(ctx context.Context, id string) (any, error) {
+	return x.http.request(ctx, "GET", "/sms/campaigns/"+enc(id), nil, nil, "")
+}
+func (x *SmsCampaigns) Update(ctx context.Context, id string, body any) (any, error) {
+	return x.http.request(ctx, "PATCH", "/sms/campaigns/"+enc(id), nil, body, "")
+}
+func (x *SmsCampaigns) Delete(ctx context.Context, id string) (any, error) {
+	return x.http.request(ctx, "DELETE", "/sms/campaigns/"+enc(id), nil, nil, "")
+}
+func (x *SmsCampaigns) Send(ctx context.Context, id string, body any) (any, error) {
+	if body == nil {
+		body = map[string]any{}
+	}
+	return x.http.request(ctx, "POST", "/sms/campaigns/"+enc(id)+"/send", nil, body, "")
+}
+func (x *SmsCampaigns) Cancel(ctx context.Context, id string) (any, error) {
+	return x.http.request(ctx, "POST", "/sms/campaigns/"+enc(id)+"/cancel", nil, nil, "")
+}
+func (x *SmsCampaigns) Pause(ctx context.Context, id string) (any, error) {
+	return x.http.request(ctx, "POST", "/sms/campaigns/"+enc(id)+"/pause", nil, nil, "")
+}
+func (x *SmsCampaigns) Resume(ctx context.Context, id string) (any, error) {
+	return x.http.request(ctx, "POST", "/sms/campaigns/"+enc(id)+"/resume", nil, nil, "")
+}
+func (x *SmsCampaigns) Reschedule(ctx context.Context, id string, body any) (any, error) {
+	return x.http.request(ctx, "POST", "/sms/campaigns/"+enc(id)+"/reschedule", nil, body, "")
+}
+func (x *SmsCampaigns) Validate(ctx context.Context, id string) (any, error) {
+	return x.http.request(ctx, "GET", "/sms/campaigns/"+enc(id)+"/validate", nil, nil, "")
+}
+
+// SmsTopics are SMS subscription topics (independent from email topics);
+// Delete archives.
+type SmsTopics struct{ http *httpClient }
+
+func (x *SmsTopics) List(ctx context.Context, params map[string]string) (any, error) {
+	return x.http.request(ctx, "GET", "/sms/topics", q(params), nil, "")
+}
+func (x *SmsTopics) Create(ctx context.Context, body any) (any, error) {
+	return x.http.request(ctx, "POST", "/sms/topics", nil, body, "")
+}
+func (x *SmsTopics) Get(ctx context.Context, id string) (any, error) {
+	return x.http.request(ctx, "GET", "/sms/topics/"+enc(id), nil, nil, "")
+}
+func (x *SmsTopics) Update(ctx context.Context, id string, body any) (any, error) {
+	return x.http.request(ctx, "PATCH", "/sms/topics/"+enc(id), nil, body, "")
+}
+func (x *SmsTopics) Delete(ctx context.Context, id string) (any, error) {
+	return x.http.request(ctx, "DELETE", "/sms/topics/"+enc(id), nil, nil, "")
+}
 
 func (x *Sms) Send(ctx context.Context, body any) (any, error) {
 	return x.http.request(ctx, "POST", "/sms", nil, body, newID())
@@ -53,6 +144,14 @@ func (x *Sms) Brands(ctx context.Context, params map[string]string) (any, error)
 // releasing a number is dashboard-only.
 func (x *Sms) Numbers(ctx context.Context, params map[string]string) (any, error) {
 	return x.http.request(ctx, "GET", "/sms/numbers", q(params), nil, "")
+}
+
+// Stats returns SMS delivery stats over a rolling window ("days": 1–365,
+// default 30): queued, sent, delivered, failed, suppressed, canceled, inbound
+// and segments billed, with delivery, failure and suppression rates. No opens
+// or clicks on SMS.
+func (x *Sms) Stats(ctx context.Context, params map[string]string) (any, error) {
+	return x.http.request(ctx, "GET", "/sms/stats", q(params), nil, "")
 }
 
 // SmsConsent reads a contact's SMS consent state and immutable consent history.

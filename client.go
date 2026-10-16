@@ -28,6 +28,7 @@ type Client struct {
 	Webhooks     *Webhooks
 	ApiKeys      *APIKeys
 	Suppressions *Suppressions
+	Jobs         *Jobs
 	Usage        *Usage
 }
 
@@ -47,6 +48,7 @@ func NewWithOptions(opts Options) *Client {
 		Webhooks:      &Webhooks{http: h},
 		ApiKeys:       &APIKeys{http: h},
 		Suppressions:  &Suppressions{http: h},
+		Jobs:          &Jobs{http: h},
 		Usage:         &Usage{http: h},
 	}
 }

@@ -265,6 +265,14 @@ func (x *ContactFields) Rename(ctx context.Context, id string, body any) (any, e
 }
 
 // Segments are contact groups.
+type Jobs struct{ http *httpClient }
+
+// Get retrieves a background job: the 202 answer of an operation too large for
+// one request. Poll until status is COMPLETED, FAILED or CANCELED.
+func (x *Jobs) Get(ctx context.Context, id string) (any, error) {
+	return x.http.request(ctx, "GET", "/jobs/"+enc(id), nil, nil, "")
+}
+
 type Segments struct{ http *httpClient }
 
 func (x *Segments) List(ctx context.Context, params map[string]string) (any, error) {

@@ -38,6 +38,11 @@ type SmsTemplates struct{ http *httpClient }
 func (x *SmsTemplates) List(ctx context.Context, params map[string]string) (any, error) {
 	return x.http.request(ctx, "GET", "/sms/templates", q(params), nil, "")
 }
+
+// ListAll iterates every row of /sms/templates across pages (see Pager).
+func (x *SmsTemplates) ListAll(params map[string]string) *Pager {
+	return newPager(x.http, "/sms/templates", params)
+}
 func (x *SmsTemplates) Create(ctx context.Context, body any) (any, error) {
 	return x.http.request(ctx, "POST", "/sms/templates", nil, body, "")
 }
@@ -58,6 +63,11 @@ type SmsCampaigns struct{ http *httpClient }
 
 func (x *SmsCampaigns) List(ctx context.Context, params map[string]string) (any, error) {
 	return x.http.request(ctx, "GET", "/sms/campaigns", q(params), nil, "")
+}
+
+// ListAll iterates every row of /sms/campaigns across pages (see Pager).
+func (x *SmsCampaigns) ListAll(params map[string]string) *Pager {
+	return newPager(x.http, "/sms/campaigns", params)
 }
 func (x *SmsCampaigns) Create(ctx context.Context, body any) (any, error) {
 	return x.http.request(ctx, "POST", "/sms/campaigns", nil, body, "")
@@ -100,6 +110,11 @@ type SmsTopics struct{ http *httpClient }
 func (x *SmsTopics) List(ctx context.Context, params map[string]string) (any, error) {
 	return x.http.request(ctx, "GET", "/sms/topics", q(params), nil, "")
 }
+
+// ListAll iterates every row of /sms/topics across pages (see Pager).
+func (x *SmsTopics) ListAll(params map[string]string) *Pager {
+	return newPager(x.http, "/sms/topics", params)
+}
 func (x *SmsTopics) Create(ctx context.Context, body any) (any, error) {
 	return x.http.request(ctx, "POST", "/sms/topics", nil, body, "")
 }
@@ -113,8 +128,10 @@ func (x *SmsTopics) Delete(ctx context.Context, id string) (any, error) {
 	return x.http.request(ctx, "DELETE", "/sms/topics/"+enc(id), nil, nil, "")
 }
 
-func (x *Sms) Send(ctx context.Context, body any) (any, error) {
-	return x.http.request(ctx, "POST", "/sms", nil, body, newID())
+// Send sends one SMS. Pass WithIdempotencyKey to make a retried send safe across
+// your own process restarts; without it the SDK mints a key per call.
+func (x *Sms) Send(ctx context.Context, body any, opts ...RequestOption) (any, error) {
+	return x.http.request(ctx, "POST", "/sms", nil, body, idempotencyKeyFrom(opts))
 }
 func (x *Sms) Get(ctx context.Context, id string) (any, error) {
 	return x.http.request(ctx, "GET", "/sms/"+enc(id), nil, nil, "")
@@ -127,6 +144,11 @@ func (x *Sms) Update(ctx context.Context, id string, body any) (any, error) {
 }
 func (x *Sms) List(ctx context.Context, params map[string]string) (any, error) {
 	return x.http.request(ctx, "GET", "/sms", q(params), nil, "")
+}
+
+// ListAll iterates every row of /sms across pages (see Pager).
+func (x *Sms) ListAll(params map[string]string) *Pager {
+	return newPager(x.http, "/sms", params)
 }
 
 // Brands lists SMS brands and their setup status. A brand is the business
@@ -177,11 +199,16 @@ func newEmail(h *httpClient) *Email {
 	return &Email{http: h, Topics: &Topics{http: h}, Campaigns: &Campaigns{http: h}, Templates: &Templates{http: h}, Domains: &Domains{http: h}}
 }
 
-func (x *Email) Send(ctx context.Context, body any) (any, error) {
-	return x.http.request(ctx, "POST", "/email", nil, body, newID())
+// Send sends or schedules one transactional email. Pass WithIdempotencyKey to
+// make a retried send safe across your own process restarts; without it the SDK
+// mints a key per call.
+func (x *Email) Send(ctx context.Context, body any, opts ...RequestOption) (any, error) {
+	return x.http.request(ctx, "POST", "/email", nil, body, idempotencyKeyFrom(opts))
 }
-func (x *Email) Batch(ctx context.Context, body any) (any, error) {
-	return x.http.request(ctx, "POST", "/email/batch", nil, body, newID())
+
+// Batch sends up to 100 emails in one request; WithIdempotencyKey as for Send.
+func (x *Email) Batch(ctx context.Context, body any, opts ...RequestOption) (any, error) {
+	return x.http.request(ctx, "POST", "/email/batch", nil, body, idempotencyKeyFrom(opts))
 }
 func (x *Email) GetBatch(ctx context.Context, id string) (any, error) {
 	return x.http.request(ctx, "GET", "/email/batches/"+enc(id), nil, nil, "")
@@ -191,6 +218,11 @@ func (x *Email) CancelBatch(ctx context.Context, id string) (any, error) {
 }
 func (x *Email) List(ctx context.Context, params map[string]string) (any, error) {
 	return x.http.request(ctx, "GET", "/email", q(params), nil, "")
+}
+
+// ListAll iterates every row of /email across pages (see Pager).
+func (x *Email) ListAll(params map[string]string) *Pager {
+	return newPager(x.http, "/email", params)
 }
 func (x *Email) Get(ctx context.Context, id string) (any, error) {
 	return x.http.request(ctx, "GET", "/email/"+enc(id), nil, nil, "")
@@ -216,6 +248,11 @@ type Contacts struct{ http *httpClient }
 
 func (x *Contacts) List(ctx context.Context, params map[string]string) (any, error) {
 	return x.http.request(ctx, "GET", "/contacts", q(params), nil, "")
+}
+
+// ListAll iterates every row of /contacts across pages (see Pager).
+func (x *Contacts) ListAll(params map[string]string) *Pager {
+	return newPager(x.http, "/contacts", params)
 }
 func (x *Contacts) Create(ctx context.Context, body any) (any, error) {
 	return x.http.request(ctx, "POST", "/contacts", nil, body, "")
@@ -248,6 +285,11 @@ type ContactFields struct{ http *httpClient }
 func (x *ContactFields) List(ctx context.Context, params map[string]string) (any, error) {
 	return x.http.request(ctx, "GET", "/contact-fields", q(params), nil, "")
 }
+
+// ListAll iterates every row of /contact-fields across pages (see Pager).
+func (x *ContactFields) ListAll(params map[string]string) *Pager {
+	return newPager(x.http, "/contact-fields", params)
+}
 func (x *ContactFields) Create(ctx context.Context, body any) (any, error) {
 	return x.http.request(ctx, "POST", "/contact-fields", nil, body, "")
 }
@@ -278,6 +320,11 @@ type Segments struct{ http *httpClient }
 func (x *Segments) List(ctx context.Context, params map[string]string) (any, error) {
 	return x.http.request(ctx, "GET", "/segments", q(params), nil, "")
 }
+
+// ListAll iterates every row of /segments across pages (see Pager).
+func (x *Segments) ListAll(params map[string]string) *Pager {
+	return newPager(x.http, "/segments", params)
+}
 func (x *Segments) Create(ctx context.Context, body any) (any, error) {
 	return x.http.request(ctx, "POST", "/segments", nil, body, "")
 }
@@ -306,6 +353,11 @@ type Topics struct{ http *httpClient }
 func (x *Topics) List(ctx context.Context, params map[string]string) (any, error) {
 	return x.http.request(ctx, "GET", "/email/topics", q(params), nil, "")
 }
+
+// ListAll iterates every row of /email/topics across pages (see Pager).
+func (x *Topics) ListAll(params map[string]string) *Pager {
+	return newPager(x.http, "/email/topics", params)
+}
 func (x *Topics) Create(ctx context.Context, body any) (any, error) {
 	return x.http.request(ctx, "POST", "/email/topics", nil, body, "")
 }
@@ -331,6 +383,11 @@ type Campaigns struct{ http *httpClient }
 func (x *Campaigns) List(ctx context.Context, params map[string]string) (any, error) {
 	return x.http.request(ctx, "GET", "/email/campaigns", q(params), nil, "")
 }
+
+// ListAll iterates every row of /email/campaigns across pages (see Pager).
+func (x *Campaigns) ListAll(params map[string]string) *Pager {
+	return newPager(x.http, "/email/campaigns", params)
+}
 func (x *Campaigns) Create(ctx context.Context, body any) (any, error) {
 	return x.http.request(ctx, "POST", "/email/campaigns", nil, body, "")
 }
@@ -343,8 +400,19 @@ func (x *Campaigns) Update(ctx context.Context, id string, body any) (any, error
 func (x *Campaigns) Delete(ctx context.Context, id string) (any, error) {
 	return x.http.request(ctx, "DELETE", "/email/campaigns/"+enc(id), nil, nil, "")
 }
+// Send a draft: it arms its saved scheduled_at while that is still ahead,
+// otherwise it sends NOW. SendWith takes a body to choose the time.
 func (x *Campaigns) Send(ctx context.Context, id string) (any, error) {
-	return x.http.request(ctx, "POST", "/email/campaigns/"+enc(id)+"/send", nil, nil, "")
+	return x.SendWith(ctx, id, nil)
+}
+
+// SendWith sends a draft with a body: map[string]any{"scheduled_at":
+// "<ISO 8601>"} schedules it, {"scheduled_at": nil} sends now, nil = Send.
+func (x *Campaigns) SendWith(ctx context.Context, id string, body any) (any, error) {
+	if body == nil {
+		body = map[string]any{}
+	}
+	return x.http.request(ctx, "POST", "/email/campaigns/"+enc(id)+"/send", nil, body, "")
 }
 func (x *Campaigns) Cancel(ctx context.Context, id string) (any, error) {
 	return x.http.request(ctx, "POST", "/email/campaigns/"+enc(id)+"/cancel", nil, nil, "")
@@ -368,6 +436,11 @@ type Templates struct{ http *httpClient }
 func (x *Templates) List(ctx context.Context, params map[string]string) (any, error) {
 	return x.http.request(ctx, "GET", "/email/templates", q(params), nil, "")
 }
+
+// ListAll iterates every row of /email/templates across pages (see Pager).
+func (x *Templates) ListAll(params map[string]string) *Pager {
+	return newPager(x.http, "/email/templates", params)
+}
 func (x *Templates) Create(ctx context.Context, body any) (any, error) {
 	return x.http.request(ctx, "POST", "/email/templates", nil, body, "")
 }
@@ -379,6 +452,11 @@ func (x *Templates) Update(ctx context.Context, id string, body any) (any, error
 }
 func (x *Templates) Delete(ctx context.Context, id string) (any, error) {
 	return x.http.request(ctx, "DELETE", "/email/templates/"+enc(id), nil, nil, "")
+}
+
+// TestSend sends ONE test of the template to body["to"] with sample variables.
+func (x *Templates) TestSend(ctx context.Context, id string, body any) (any, error) {
+	return x.http.request(ctx, "POST", "/email/templates/"+enc(id)+"/test-send", nil, body, "")
 }
 
 // BrandKits are read-only brand profiles.
@@ -397,6 +475,11 @@ type Domains struct{ http *httpClient }
 func (x *Domains) List(ctx context.Context, params map[string]string) (any, error) {
 	return x.http.request(ctx, "GET", "/email/domains", q(params), nil, "")
 }
+
+// ListAll iterates every row of /email/domains across pages (see Pager).
+func (x *Domains) ListAll(params map[string]string) *Pager {
+	return newPager(x.http, "/email/domains", params)
+}
 func (x *Domains) Create(ctx context.Context, body any) (any, error) {
 	return x.http.request(ctx, "POST", "/email/domains", nil, body, "")
 }
@@ -413,11 +496,21 @@ func (x *Domains) Verify(ctx context.Context, id string) (any, error) {
 	return x.http.request(ctx, "POST", "/email/domains/"+enc(id)+"/verify", nil, nil, "")
 }
 
+// Diagnose is a read-only DNS diagnosis: per-record answers and ranked findings with fixes.
+func (x *Domains) Diagnose(ctx context.Context, id string) (any, error) {
+	return x.http.request(ctx, "GET", "/email/domains/"+enc(id)+"/diagnose", nil, nil, "")
+}
+
 // Webhooks manage event endpoints and verify deliveries.
 type Webhooks struct{ http *httpClient }
 
 func (x *Webhooks) List(ctx context.Context, params map[string]string) (any, error) {
 	return x.http.request(ctx, "GET", "/webhooks", q(params), nil, "")
+}
+
+// ListAll iterates every row of /webhooks across pages (see Pager).
+func (x *Webhooks) ListAll(params map[string]string) *Pager {
+	return newPager(x.http, "/webhooks", params)
 }
 func (x *Webhooks) Create(ctx context.Context, body any) (any, error) {
 	return x.http.request(ctx, "POST", "/webhooks", nil, body, "")
@@ -434,6 +527,21 @@ func (x *Webhooks) Delete(ctx context.Context, id string) (any, error) {
 func (x *Webhooks) Test(ctx context.Context, id string) (any, error) {
 	return x.http.request(ctx, "POST", "/webhooks/"+enc(id)+"/test", nil, nil, "")
 }
+
+// RotateSecret mints a new signing secret, returned once; the old one co-signs for 24 h.
+func (x *Webhooks) RotateSecret(ctx context.Context, id string) (any, error) {
+	return x.http.request(ctx, "POST", "/webhooks/"+enc(id)+"/rotate-secret", nil, nil, "")
+}
+
+// ListDeliveries is the endpoint's delivery log, newest first (cursor-paginated).
+func (x *Webhooks) ListDeliveries(ctx context.Context, id string, params map[string]string) (any, error) {
+	return x.http.request(ctx, "GET", "/webhooks/"+enc(id)+"/deliveries", q(params), nil, "")
+}
+
+// ListAllDeliveries iterates every delivery of the endpoint (see Pager).
+func (x *Webhooks) ListAllDeliveries(id string, params map[string]string) *Pager {
+	return newPager(x.http, "/webhooks/"+enc(id)+"/deliveries", params)
+}
 func (x *Webhooks) Verify(payload, secret string, headers http.Header, toleranceSeconds int) (any, error) {
 	return VerifyWebhook(payload, secret, headers, toleranceSeconds)
 }
@@ -443,6 +551,11 @@ type APIKeys struct{ http *httpClient }
 
 func (x *APIKeys) List(ctx context.Context, params map[string]string) (any, error) {
 	return x.http.request(ctx, "GET", "/api-keys", q(params), nil, "")
+}
+
+// ListAll iterates every row of /api-keys across pages (see Pager).
+func (x *APIKeys) ListAll(params map[string]string) *Pager {
+	return newPager(x.http, "/api-keys", params)
 }
 func (x *APIKeys) Create(ctx context.Context, body any) (any, error) {
 	return x.http.request(ctx, "POST", "/api-keys", nil, body, "")
@@ -456,6 +569,11 @@ type Suppressions struct{ http *httpClient }
 
 func (x *Suppressions) List(ctx context.Context, params map[string]string) (any, error) {
 	return x.http.request(ctx, "GET", "/suppressions", q(params), nil, "")
+}
+
+// ListAll iterates every row of /suppressions across pages (see Pager).
+func (x *Suppressions) ListAll(params map[string]string) *Pager {
+	return newPager(x.http, "/suppressions", params)
 }
 func (x *Suppressions) Create(ctx context.Context, body any) (any, error) {
 	return x.http.request(ctx, "POST", "/suppressions", nil, body, "")

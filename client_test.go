@@ -58,6 +58,47 @@ func TestEmailSendError(t *testing.T) {
 	}
 }
 
+func TestSmsListForwardsFilters(t *testing.T) {
+	var got map[string][]string
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet || !strings.HasSuffix(r.URL.Path, "/api/v1/sms") {
+			t.Errorf("unexpected %s %s", r.Method, r.URL.Path)
+		}
+		got = r.URL.Query()
+		w.Header().Set("Content-Type", "application/json")
+		io.WriteString(w, `{"object":"list","has_more":false,"data":[]}`)
+	}))
+	defer srv.Close()
+	c := NewWithOptions(Options{APIKey: "test_key", BaseURL: srv.URL, HTTPClient: srv.Client()})
+	want := map[string]string{
+		"direction":      "inbound",
+		"status":         "received",
+		"from":           "+15551230000",
+		"to":             "+18005550100",
+		"participant":    "+15551230000",
+		"contact_id":     "contact_1",
+		"campaign_id":    "smscmp_1",
+		"created_after":  "2026-10-01T00:00:00Z",
+		"created_before": "2026-10-24T00:00:00Z",
+		"limit":          "20",
+	}
+	params := map[string]string{"after": ""} // empty values are dropped
+	for k, v := range want {
+		params[k] = v
+	}
+	if _, err := c.Sms.List(context.Background(), params); err != nil {
+		t.Fatal(err)
+	}
+	if len(got) != len(want) {
+		t.Fatalf("query=%v", got)
+	}
+	for k, v := range want {
+		if g := got[k]; len(g) != 1 || g[0] != v {
+			t.Fatalf("%s=%v, want %q", k, g, v)
+		}
+	}
+}
+
 func TestVerifyWebhookGolden(t *testing.T) {
 	h := http.Header{}
 	h.Set("svix-id", "msg_2VeXh1EN7xExAmAmQ8gxxYz")

@@ -82,7 +82,21 @@ type Sms struct {
 	// One of: transactional, marketing.
 	Type string `json:"type"`
 	Body *string `json:"body"`
+	// Billed units. Outbound: segments. Inbound: 1 when the received text was
+	// charged (1¢ in the US and Canada), else 0.
 	Segments int64 `json:"segments"`
+	// Inbound only: your text this reply answers (`sms_…`), when the carrier says
+	// which. Null otherwise.
+	InReplyTo *string `json:"in_reply_to"`
+	// Inbound only: when the reply reached Unitpost. Order a conversation by this;
+	// carriers don't guarantee order. Null on outbound.
+	ReceivedAt *string `json:"received_at"`
+	// Inbound only: the text reads like a request to stop texting ("please stop
+	// texting me") but was not an opt-out keyword, so no opt-out was recorded.
+	// Decide whether to record one (POST /v1/contacts/{id}/sms-consent, action
+	// opt_out). False for an exact keyword such as STOP (already recorded) and on
+	// outbound.
+	LooksLikeOptOut bool `json:"looks_like_opt_out"`
 	Country *string `json:"country"`
 	ScheduledAt *string `json:"scheduled_at"`
 	// Legacy free-text error. Prefer `error.code`.
@@ -154,6 +168,11 @@ type SmsNumber struct {
 	// ISO-3166 alpha-2 country the number was issued in (`US` for toll-free and
 	// 10DLC, `CA` for a Canadian long code). Null until recorded.
 	Country *string `json:"country"`
+	// Whether people can text this number: once it is active, a text to it fires the
+	// `sms.received` webhook and costs 1¢. True for US toll-free and 10DLC numbers
+	// and Canadian long codes (two-way is offered in the US and Canada only); false
+	// for Sender IDs, which are one-way, and for the simulator.
+	TwoWay bool `json:"two_way"`
 	// ISO-3166 alpha-2 countries this number can deliver to. US toll-free and 10DLC
 	// numbers reach `["US"]` only; a Canadian long code reaches `["CA"]` only. A
 	// recipient outside this list is skipped before send (status `suppressed`, not

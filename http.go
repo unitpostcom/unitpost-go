@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"math"
 	"net/http"
 	"net/url"
 	"os"
@@ -115,13 +116,13 @@ func (c *httpClient) attempt(ctx context.Context, method, path string, query url
 	if body != nil && method != http.MethodGet {
 		b, err := json.Marshal(body)
 		if err != nil {
-			return nil, &Error{Code: "encode_error", Message: err.Error()}, 0
+			return nil, &Error{Code: "encode_error", Message: err.Error()}, noRetryAfter
 		}
 		payload = bytes.NewReader(b)
 	}
 	req, err := http.NewRequestWithContext(ctx, method, u, payload)
 	if err != nil {
-		return nil, &Error{Code: "network_error", Message: err.Error()}, 0
+		return nil, &Error{Code: "network_error", Message: err.Error()}, noRetryAfter
 	}
 	req.Header.Set("Authorization", "Bearer "+c.apiKey)
 	req.Header.Set("User-Agent", "unitpost-go/"+SDKVersion)
@@ -134,18 +135,16 @@ func (c *httpClient) attempt(ctx context.Context, method, path string, query url
 	}
 	res, err := c.http.Do(req)
 	if err != nil {
-		return nil, &Error{Code: "network_error", Message: err.Error()}, 0
+		return nil, &Error{Code: "network_error", Message: err.Error()}, noRetryAfter
 	}
 	defer res.Body.Close()
 	raw, _ := io.ReadAll(res.Body)
-	var retryAfter time.Duration
-	if v := res.Header.Get("Retry-After"); v != "" {
-		if secs, convErr := strconv.Atoi(v); convErr == nil {
-			retryAfter = time.Duration(secs) * time.Second
-		}
+	retryAfter := noRetryAfter
+	if d, ok := parseRetryAfter(res.Header.Get("Retry-After"), time.Now()); ok {
+		retryAfter = d
 	}
 	if res.StatusCode == http.StatusNoContent {
-		return nil, nil, 0
+		return nil, nil, noRetryAfter
 	}
 	var parsed any
 	if len(raw) > 0 {
@@ -165,11 +164,48 @@ func (c *httpClient) attempt(ctx context.Context, method, path string, query url
 		}
 		return nil, &Error{Code: code, Message: msg, Status: res.StatusCode, RequestID: res.Header.Get("X-Request-Id")}, retryAfter
 	}
-	return parsed, nil, 0
+	return parsed, nil, noRetryAfter
 }
 
+// noRetryAfter marks a response that carried no usable Retry-After header.
+// It is negative so that "Retry-After: 0" (retry now) stays distinguishable.
+const noRetryAfter time.Duration = -1
+
+// parseRetryAfter reads a Retry-After header: delta-seconds ("3", "1.5") or an
+// HTTP date ("Wed, 21 Oct 2026 07:28:00 GMT"). It returns how long to wait from
+// now, and false when the header is absent or unreadable. A date in the past
+// means retry now. backoff clamps the result to maxRetryDelay.
+func parseRetryAfter(v string, now time.Time) (time.Duration, bool) {
+	v = strings.TrimSpace(v)
+	if v == "" {
+		return 0, false
+	}
+	if secs, err := strconv.ParseFloat(v, 64); err == nil {
+		if math.IsNaN(secs) || math.IsInf(secs, 0) {
+			return 0, false
+		}
+		if secs <= 0 {
+			return 0, true
+		}
+		if secs >= float64(math.MaxInt64)/float64(time.Second) {
+			return time.Duration(math.MaxInt64), true
+		}
+		return time.Duration(secs * float64(time.Second)), true
+	}
+	if t, err := http.ParseTime(v); err == nil {
+		if d := t.Sub(now); d > 0 {
+			return d, true
+		}
+		return 0, true
+	}
+	return 0, false
+}
+
+// backoff is the wait before the next retry: the server's Retry-After when it
+// sent one, else exponential backoff (retryBaseDelay * 2^attempt) with full
+// jitter. Both are capped at maxRetryDelay.
 func (c *httpClient) backoff(attempt int, retryAfter time.Duration) time.Duration {
-	if retryAfter > 0 {
+	if retryAfter >= 0 {
 		if retryAfter > c.maxRetryDelay {
 			return c.maxRetryDelay
 		}

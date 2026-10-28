@@ -25,8 +25,19 @@ type Client struct {
 	ContactFields *ContactFields
 	Segments     *Segments
 	BrandKits    *BrandKits
+	// LibraryImages is the image library templates embed (/img/… paths).
+	LibraryImages *LibraryImages
+	// Branding is the email footer and unsubscribe page look; its writes need
+	// branding:write (on no key preset).
+	Branding *Branding
+	// Workspace is who is calling (Whoami, any credential), the activity log
+	// (ListActivity, needs activity:read, on no key preset), and the
+	// workspace's name and image; the writes need branding:write (on no key
+	// preset).
+	Workspace    *Workspace
 	Webhooks     *Webhooks
 	ApiKeys      *APIKeys
+	Logs         *Logs // the API request log (List); needs apikeys:read, on no key preset
 	Suppressions *Suppressions
 	Jobs         *Jobs
 	Usage        *Usage
@@ -45,8 +56,12 @@ func NewWithOptions(opts Options) *Client {
 		ContactFields: &ContactFields{http: h},
 		Segments:      &Segments{http: h},
 		BrandKits:     &BrandKits{http: h},
+		LibraryImages: &LibraryImages{http: h},
+		Branding:      &Branding{http: h},
+		Workspace:     &Workspace{http: h},
 		Webhooks:      &Webhooks{http: h},
 		ApiKeys:       &APIKeys{http: h},
+		Logs:          &Logs{http: h},
 		Suppressions:  &Suppressions{http: h},
 		Jobs:          &Jobs{http: h},
 		Usage:         &Usage{http: h},

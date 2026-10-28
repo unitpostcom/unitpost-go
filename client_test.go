@@ -129,3 +129,78 @@ func jsonInt(n int64) string {
 	b, _ := json.Marshal(n)
 	return strings.Trim(string(b), `"`)
 }
+
+func TestParseRetryAfter(t *testing.T) {
+	now := time.Date(2026, 10, 26, 12, 0, 0, 0, time.UTC)
+	cases := []struct {
+		in   string
+		want time.Duration
+		ok   bool
+	}{
+		{"3", 3 * time.Second, true},
+		{"1.5", 1500 * time.Millisecond, true},
+		{"0", 0, true},
+		{"Mon, 26 Oct 2026 12:00:07 GMT", 7 * time.Second, true},
+		{"Monday, 26-Oct-26 12:00:07 GMT", 7 * time.Second, true}, // RFC 850
+		{"Mon Oct 26 12:00:07 2026", 7 * time.Second, true},       // asctime
+		{"Mon, 26 Oct 2026 11:00:00 GMT", 0, true},                // past date: retry now
+		{"", 0, false},
+		{"soon", 0, false},
+	}
+	for _, tc := range cases {
+		got, ok := parseRetryAfter(tc.in, now)
+		if ok != tc.ok || got != tc.want {
+			t.Errorf("parseRetryAfter(%q) = %v, %v; want %v, %v", tc.in, got, ok, tc.want, tc.ok)
+		}
+	}
+}
+
+func TestBackoffCapsRetryAfterAndJitters(t *testing.T) {
+	c := &httpClient{retryBaseDelay: 500 * time.Millisecond, maxRetryDelay: 20 * time.Second}
+	if got := c.backoff(0, time.Hour); got != 20*time.Second {
+		t.Fatalf("Retry-After of an hour waited %v, want the 20s cap", got)
+	}
+	if got := c.backoff(0, 0); got != 0 {
+		t.Fatalf("Retry-After: 0 waited %v, want 0", got)
+	}
+	if got := c.backoff(0, 3*time.Second); got != 3*time.Second {
+		t.Fatalf("Retry-After: 3 waited %v", got)
+	}
+	for i := 0; i < 50; i++ {
+		if got := c.backoff(1, noRetryAfter); got < 0 || got > time.Second {
+			t.Fatalf("jittered backoff %v outside [0, 1s]", got)
+		}
+	}
+}
+
+// A 429 whose Retry-After is an HTTP date is honored (clamped to maxRetryDelay),
+// not ignored in favor of the jittered backoff.
+func TestRetry429HonorsHTTPDateRetryAfter(t *testing.T) {
+	calls := 0
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		calls++
+		if calls == 1 {
+			w.Header().Set("Retry-After", time.Now().Add(time.Hour).UTC().Format(http.TimeFormat))
+			w.WriteHeader(http.StatusTooManyRequests)
+			io.WriteString(w, `{"error":{"code":"rate_limited","message":"slow down"}}`)
+			return
+		}
+		io.WriteString(w, `{"ok":true}`)
+	}))
+	defer srv.Close()
+	h := newHTTP(Options{APIKey: "test_key", BaseURL: srv.URL, HTTPClient: srv.Client()})
+	h.retryBaseDelay = time.Millisecond // a jittered backoff would wait at most 1ms
+	h.maxRetryDelay = 200 * time.Millisecond
+	start := time.Now()
+	data, err := h.request(context.Background(), http.MethodGet, "/usage", nil, nil, "")
+	elapsed := time.Since(start)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if calls != 2 || data.(map[string]any)["ok"] != true {
+		t.Fatalf("calls=%d data=%v", calls, data)
+	}
+	if elapsed < 200*time.Millisecond || elapsed > 5*time.Second {
+		t.Fatalf("waited %v, want the 200ms cap", elapsed)
+	}
+}

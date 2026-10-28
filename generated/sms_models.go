@@ -43,6 +43,23 @@ type SmsError struct {
 	Message string `json:"message"`
 }
 
+// Who carriers reach about the brand (the email is `contact_email`).
+type SmsBrandContact struct {
+	FirstName *string `json:"first_name"`
+	LastName *string `json:"last_name"`
+	Phone *string `json:"phone"`
+}
+
+// The registered business address.
+type SmsBrandAddress struct {
+	Address1 *string `json:"address1"`
+	Address2 *string `json:"address2"`
+	City *string `json:"city"`
+	State *string `json:"state"`
+	ZipCode *string `json:"zip_code"`
+	IsoCountryCode *string `json:"iso_country_code"`
+}
+
 // SmsNumberUseCase is the `SmsNumberUseCase` object from the public API.
 type SmsNumberUseCase struct {
 	Name string `json:"name"`
@@ -141,6 +158,26 @@ type SmsBrand struct {
 	// corrected only when carriers ask.
 	Editable bool `json:"editable"`
 	CreatedAt string `json:"created_at"`
+	// The name the business trades under, when it isn't the legal name.
+	DbaName *string `json:"dba_name,omitempty"`
+	// The one Sender ID the brand sends under abroad (1–11 characters).
+	SenderIdName *string `json:"sender_id_name,omitempty"`
+	// The brand's industry, in the carriers' words (e.g. `RETAIL`).
+	Vertical *string `json:"vertical,omitempty"`
+	// `PRIVATE_PROFIT`, `PUBLIC_PROFIT`, `NON_PROFIT`, `GOVERNMENT`, …
+	LegalOrganizationType *string `json:"legal_organization_type,omitempty"`
+	RegistrationNumberType *string `json:"registration_number_type,omitempty"`
+	TaxCountry *string `json:"tax_country,omitempty"`
+	StockSymbol *string `json:"stock_symbol,omitempty"`
+	StockExchange *string `json:"stock_exchange,omitempty"`
+	// Who carriers reach about the brand (the email is `contact_email`).
+	Contact *SmsBrandContact `json:"contact,omitempty"`
+	// The registered business address.
+	Address *SmsBrandAddress `json:"address,omitempty"`
+	// Moves on every material change; a registration keeps the revision it was
+	// submitted with.
+	Revision *int64 `json:"revision,omitempty"`
+	ArchivedAt *string `json:"archived_at,omitempty"`
 }
 
 // SmsNumber is the `SmsNumber` object from the public API.

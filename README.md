@@ -27,6 +27,19 @@ client.Email.Batch(ctx, emails, unitpost.WithIdempotencyKey("digest-2026-10-24")
 client.Sms.Send(ctx, sms, unitpost.WithIdempotencyKey("otp-5678"))
 ```
 
+## Retries
+
+Transient failures are retried automatically: `429`, `5xx` and transport errors (timeouts, network failures) are retried up to 2 times by default (3 attempts in all). When the error response carries a `Retry-After` header (a `429` always does), the client waits that long, read as seconds or an HTTP date and capped at 20 seconds. Otherwise it waits with exponential backoff and full jitter: a random time up to 500 ms × 2^attempt, also capped at 20 seconds. A cancelled `ctx` ends the wait. Client errors (`401`/`403`/`404`/`409`/`422`) are never retried.
+
+Only requests that are safe to replay are retried: `GET`s and writes that carry an idempotency key (`Email.Send`, `Email.Batch` and `Sms.Send` always do, see above). Any other write without a key is sent once.
+
+The retry count is the only setting; the delays are fixed. `MaxRetries` applies when `MaxRetriesSet` is true:
+
+```go
+// No retries at all.
+client := unitpost.NewWithOptions(unitpost.Options{MaxRetries: 0, MaxRetriesSet: true})
+```
+
 ## Pagination
 
 List endpoints are cursor-paginated. `list` returns one page; the iterator below walks every page, following `has_more` with the last row's `id` as the next `after` cursor. Filters you pass ride along on every page.

@@ -28,6 +28,30 @@ const (
 // SmsSkipReasonValues lists every SmsSkipReason the API emits today.
 var SmsSkipReasonValues = []SmsSkipReason{SmsSkipReasonOutOfReach, SmsSkipReasonUnsupportedCountry, SmsSkipReasonNoPhone, SmsSkipReasonOptedOut, SmsSkipReasonNoMarketingConsent, SmsSkipReasonQuietHoursDeferred, SmsSkipReasonSenderNotActive}
 
+type SmsFailureCode string
+
+const (
+	SmsFailureCodeQuotaExceeded SmsFailureCode = "quota_exceeded"
+	SmsFailureCodeOverageCapExceeded SmsFailureCode = "overage_cap_exceeded"
+	SmsFailureCodeSubscriptionInactive SmsFailureCode = "subscription_inactive"
+	SmsFailureCodeUnsupportedCountry SmsFailureCode = "unsupported_country"
+	SmsFailureCodeWorkspaceSuspended SmsFailureCode = "workspace_suspended"
+	SmsFailureCodeSmsBrandBlocked SmsFailureCode = "sms_brand_blocked"
+	SmsFailureCodeSenderNotActive SmsFailureCode = "sender_not_active"
+	SmsFailureCodeSenderRegistrationIncomplete SmsFailureCode = "sender_registration_incomplete"
+	SmsFailureCodeSenderActionRequired SmsFailureCode = "sender_action_required"
+	SmsFailureCodeSenderUseCaseMismatch SmsFailureCode = "sender_use_case_mismatch"
+	SmsFailureCodeQuietHoursUnsatisfiable SmsFailureCode = "quiet_hours_unsatisfiable"
+	SmsFailureCodeChannelUnavailable SmsFailureCode = "channel_unavailable"
+	SmsFailureCodeDeliveryExhausted SmsFailureCode = "delivery_exhausted"
+	SmsFailureCodeProviderRejected SmsFailureCode = "provider_rejected"
+	SmsFailureCodeCarrierUndelivered SmsFailureCode = "carrier_undelivered"
+	SmsFailureCodeSuspectedPumping SmsFailureCode = "suspected_pumping"
+)
+
+// SmsFailureCodeValues lists every SmsFailureCode the API emits today.
+var SmsFailureCodeValues = []SmsFailureCode{SmsFailureCodeQuotaExceeded, SmsFailureCodeOverageCapExceeded, SmsFailureCodeSubscriptionInactive, SmsFailureCodeUnsupportedCountry, SmsFailureCodeWorkspaceSuspended, SmsFailureCodeSmsBrandBlocked, SmsFailureCodeSenderNotActive, SmsFailureCodeSenderRegistrationIncomplete, SmsFailureCodeSenderActionRequired, SmsFailureCodeSenderUseCaseMismatch, SmsFailureCodeQuietHoursUnsatisfiable, SmsFailureCodeChannelUnavailable, SmsFailureCodeDeliveryExhausted, SmsFailureCodeProviderRejected, SmsFailureCodeCarrierUndelivered, SmsFailureCodeSuspectedPumping}
+
 // SmsError is the `SmsError` object from the public API.
 type SmsError struct {
 	// Why a message was skipped before reaching the carrier. `out_of_reach`: no
@@ -116,12 +140,27 @@ type Sms struct {
 	LooksLikeOptOut bool `json:"looks_like_opt_out"`
 	Country *string `json:"country"`
 	ScheduledAt *string `json:"scheduled_at"`
-	// Legacy free-text error. Prefer `error.code`.
+	// The sentence for why the text failed or was skipped. Match on `failure_code`
+	// (failed) or `error.code` (suppressed), not on this text.
 	LastError *string `json:"last_error"`
 	// Set on `suppressed` messages: the stable skip reason and its sentence. Null
 	// otherwise.
 	Error *SmsError `json:"error"`
 	CreatedAt string `json:"created_at"`
+	// Set on `failed` messages: why it failed, as a stable code (the sentence is
+	// `last_error`). Null otherwise. Only `carrier_undelivered` (the carrier
+	// accepted the text, then could not deliver it) is billed; every other failure
+	// is not charged. Billing when a scheduled text was due: `quota_exceeded`,
+	// `overage_cap_exceeded`, `subscription_inactive`; `unsupported_country`: SMS to
+	// the country was paused; workspace holds: `workspace_suspended`,
+	// `sms_brand_blocked`; the sender: `sender_not_active`,
+	// `sender_registration_incomplete`, `sender_action_required`,
+	// `sender_use_case_mismatch`; `quiet_hours_unsatisfiable`: marketing that could
+	// not go out inside the recipient's window; ours: `channel_unavailable`,
+	// `delivery_exhausted`; `provider_rejected`: refused before any carrier;
+	// `suspected_pumping`: stopped before the carrier as suspected SMS pumping. The
+	// same code is `failed.code` on the `sms.failed` webhook.
+	FailureCode *SmsFailureCode `json:"failure_code,omitempty"`
 }
 
 // SmsBrand is the `SmsBrand` object from the public API.

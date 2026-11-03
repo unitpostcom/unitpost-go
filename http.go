@@ -32,7 +32,10 @@ type Error struct {
 	Message   string
 	Status    int
 	RequestID string
-	Details   []map[string]any
+	// Details holds per-field problems: each entry has "field" and
+	// "message", plus an optional machine-readable "code" (e.g. the SMS
+	// skip word on "to": "out_of_reach").
+	Details []map[string]any
 }
 
 func (e *Error) Error() string { return e.Code + ": " + e.Message }

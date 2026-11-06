@@ -58,6 +58,31 @@ func TestEmailSendError(t *testing.T) {
 	}
 }
 
+// A planned maintenance window: the edge answers every request with this 503.
+// A keyless write is not retried, and the body's code and message reach the
+// caller unchanged (no generic 5xx error).
+func TestMaintenance503ReachesTheCaller(t *testing.T) {
+	const message = "Unitpost is down for scheduled maintenance. Retry after the Retry-After header; https://status.unitpost.com shows the expected end of the window."
+	calls := 0
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		calls++
+		w.Header().Set("Retry-After", "300")
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(503)
+		io.WriteString(w, `{"error":{"code":"maintenance","message":"`+message+`"}}`)
+	}))
+	defer srv.Close()
+	c := NewWithOptions(Options{APIKey: "test_key", BaseURL: srv.URL, HTTPClient: srv.Client()})
+	_, err := c.Contacts.Create(context.Background(), map[string]any{"email": "x@test.com"})
+	ue, ok := err.(*Error)
+	if !ok || ue.Code != "maintenance" || ue.Message != message || ue.Status != 503 {
+		t.Fatalf("err=%v", err)
+	}
+	if calls != 1 {
+		t.Fatalf("a keyless write was sent %d times, want 1", calls)
+	}
+}
+
 func TestSmsListForwardsFilters(t *testing.T) {
 	var got map[string][]string
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

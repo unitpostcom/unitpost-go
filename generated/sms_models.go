@@ -123,8 +123,9 @@ type Sms struct {
 	// One of: transactional, marketing.
 	Type string `json:"type"`
 	Body *string `json:"body"`
-	// Billed units. Outbound: segments. Inbound: 1 when the received text was
-	// charged (1¢ in the US and Canada), else 0.
+	// Billed units. Outbound: segments. Inbound: the received text's segments when
+	// it was charged ($0.008 a segment in the US and $0.004 in Canada; a text
+	// charged before per-segment pricing was 1¢ flat and shows 1), else 0.
 	Segments int64 `json:"segments"`
 	// Inbound only: your text this reply answers (`sms_…`), when the carrier says
 	// which. Null otherwise.
@@ -245,9 +246,10 @@ type SmsNumber struct {
 	// 10DLC, `CA` for a Canadian long code). Null until recorded.
 	Country *string `json:"country"`
 	// Whether people can text this number: once it is active, a text to it fires the
-	// `sms.received` webhook and costs 1¢. True for US toll-free and 10DLC numbers
-	// and Canadian long codes (two-way is offered in the US and Canada only); false
-	// for Sender IDs, which are one-way, and for the simulator.
+	// `sms.received` webhook and costs $0.008 a segment in the US and $0.004 in
+	// Canada. True for US toll-free and 10DLC numbers and Canadian long codes
+	// (two-way is offered in the US and Canada only); false for Sender IDs, which
+	// are one-way, and for the simulator.
 	TwoWay bool `json:"two_way"`
 	// ISO-3166 alpha-2 countries this number can deliver to. US toll-free and 10DLC
 	// numbers reach `["US"]` only; a Canadian long code reaches `["CA"]` only. A

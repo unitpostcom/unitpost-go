@@ -1150,7 +1150,7 @@ var Operations = []Operation{
 		HTTPMethod: "GET",
 		Path: "/email/received",
 		PathParams: nil,
-		QueryParams: []string{"limit", "after", "before"},
+		QueryParams: []string{"limit", "after", "before", "to", "thread_id", "created_after", "created_before"},
 		HasBody: false,
 		RequestSchema: "",
 		ResponseSchema: "",

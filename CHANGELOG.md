@@ -9,6 +9,28 @@ change that bumps the version (docs/sdk/RELEASING.md).
 
 ## Unreleased
 
+- `SmsFailureCode` gains `sms_not_in_plan`: SMS wasn't on the plan when a text was due (the paid plan ended after its grace, or the plan is 100% discounted). Not charged.
+- SMS numbers and registrations, start to finish (ADR-0160, 2026-11-12):
+  `Sms.GetNumber(ctx, id)`, `Sms.ReleaseNumber(ctx, id, body, opts...)`
+  (permanent), `Sms.Registrations.Get(ctx, id)`, `Sms.Registrations.Remove`
+  (a 10DLC setup with no number) and `Sms.Registrations.Replace` (an approved
+  brand registration).
+- Files and SMS onboarding by API (ADR-0159, 2026-11-12):
+  - `Files` (new): `List(ctx, params)` (`"purpose"` filters), `Create(ctx,
+    body, opts...)`, `Get(ctx, id)`, `Delete(ctx, id)`. A file (`file_` id)
+    is bytes handed to the API for one `purpose` (`sms_opt_in_evidence`,
+    `sms_document`, `image`) from a `url`, base64 `data`, or an upload
+    session, used by `file_id` and expiring after 24 hours.
+  - `Sms`: a brand's documents (`ListBrandDocuments(ctx, brandID)`,
+    `AddBrandDocument(ctx, brandID, body, opts...)`, `GetBrandDocument`,
+    `RemoveBrandDocument`, and `BrandDocumentUrl`, a 5-minute signed link),
+    and `ResubmitNumber(ctx, numberID, body, opts...)` for a toll-free
+    verification carriers sent back.
+  - `Sms.Registrations`: `Resubmit(ctx, id, body, opts...)` for a 10DLC
+    campaign carriers sent back, and `RequestNumber(ctx, id, nil, opts...)`
+    to retry a failed number whose fee is committed.
+  - Every new write mints an Idempotency-Key unless you pass
+    `WithIdempotencyKey`.
 - `Error.Details` entries document the optional `"code"`, a
   machine-readable reason for the entry, such as the SMS skip word on `to`
   (`out_of_reach`).

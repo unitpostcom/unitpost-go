@@ -100,3 +100,44 @@ func TestListAllRefusesBefore(t *testing.T) {
 		t.Fatalf("err=%v", p.Err())
 	}
 }
+
+// ADR-0160: releasing a number and removing / replacing a registration take
+// the caller's key, or mint one.
+func TestSmsLifecycleWritesTakeAKey(t *testing.T) {
+	type hit struct{ method, path, key, body string }
+	var hits []hit
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		b, _ := io.ReadAll(r.Body)
+		hits = append(hits, hit{r.Method, r.URL.Path, r.Header.Get("Idempotency-Key"), string(b)})
+		io.WriteString(w, `{"id":"x"}`)
+	}))
+	defer srv.Close()
+	c := NewWithOptions(Options{APIKey: "test_key", BaseURL: srv.URL, HTTPClient: srv.Client()})
+	ctx := context.Background()
+	if _, err := c.Sms.ReleaseNumber(ctx, "snum_1", map[string]any{"force": true}, WithIdempotencyKey("rel-1")); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := c.Sms.Registrations.Remove(ctx, "sreg_1", map[string]any{}); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := c.Sms.Registrations.Replace(ctx, "sreg_2", nil); err != nil {
+		t.Fatal(err)
+	}
+	want := []hit{
+		{"POST", "/api/v1/sms/numbers/snum_1/release", "rel-1", `{"force":true}`},
+		{"POST", "/api/v1/sms/registrations/sreg_1/remove", "", `{}`},
+		{"POST", "/api/v1/sms/registrations/sreg_2/replace", "", ``},
+	}
+	for i, w := range want {
+		h := hits[i]
+		if h.method != w.method || h.path != w.path || h.body != w.body {
+			t.Fatalf("hit %d = %+v, want %+v", i, h, w)
+		}
+		if w.key != "" && h.key != w.key {
+			t.Fatalf("hit %d key=%q, want %q", i, h.key, w.key)
+		}
+		if h.key == "" {
+			t.Fatalf("hit %d has no Idempotency-Key", i)
+		}
+	}
+}

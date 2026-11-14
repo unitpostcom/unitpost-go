@@ -34,6 +34,7 @@ const (
 	SmsFailureCodeQuotaExceeded SmsFailureCode = "quota_exceeded"
 	SmsFailureCodeOverageCapExceeded SmsFailureCode = "overage_cap_exceeded"
 	SmsFailureCodeSubscriptionInactive SmsFailureCode = "subscription_inactive"
+	SmsFailureCodeSmsNotInPlan SmsFailureCode = "sms_not_in_plan"
 	SmsFailureCodeUnsupportedCountry SmsFailureCode = "unsupported_country"
 	SmsFailureCodeWorkspaceSuspended SmsFailureCode = "workspace_suspended"
 	SmsFailureCodeSmsBrandBlocked SmsFailureCode = "sms_brand_blocked"
@@ -50,7 +51,7 @@ const (
 )
 
 // SmsFailureCodeValues lists every SmsFailureCode the API emits today.
-var SmsFailureCodeValues = []SmsFailureCode{SmsFailureCodeQuotaExceeded, SmsFailureCodeOverageCapExceeded, SmsFailureCodeSubscriptionInactive, SmsFailureCodeUnsupportedCountry, SmsFailureCodeWorkspaceSuspended, SmsFailureCodeSmsBrandBlocked, SmsFailureCodeSenderNotActive, SmsFailureCodeSenderRegistrationIncomplete, SmsFailureCodeSenderActionRequired, SmsFailureCodeSenderUseCaseMismatch, SmsFailureCodeQuietHoursUnsatisfiable, SmsFailureCodeChannelUnavailable, SmsFailureCodeDeliveryExhausted, SmsFailureCodeProviderRejected, SmsFailureCodeCarrierUndelivered, SmsFailureCodeSuspectedPumping}
+var SmsFailureCodeValues = []SmsFailureCode{SmsFailureCodeQuotaExceeded, SmsFailureCodeOverageCapExceeded, SmsFailureCodeSubscriptionInactive, SmsFailureCodeSmsNotInPlan, SmsFailureCodeUnsupportedCountry, SmsFailureCodeWorkspaceSuspended, SmsFailureCodeSmsBrandBlocked, SmsFailureCodeSenderNotActive, SmsFailureCodeSenderRegistrationIncomplete, SmsFailureCodeSenderActionRequired, SmsFailureCodeSenderUseCaseMismatch, SmsFailureCodeQuietHoursUnsatisfiable, SmsFailureCodeChannelUnavailable, SmsFailureCodeDeliveryExhausted, SmsFailureCodeProviderRejected, SmsFailureCodeCarrierUndelivered, SmsFailureCodeSuspectedPumping}
 
 // SmsError is the `SmsError` object from the public API.
 type SmsError struct {
@@ -88,6 +89,16 @@ type SmsBrandAddress struct {
 type SmsNumberUseCase struct {
 	Name string `json:"name"`
 	Category *string `json:"category"`
+}
+
+// SmsNumberFeedbackItem is the `SmsNumberFeedbackItem` object from the public API.
+type SmsNumberFeedbackItem struct {
+	// The carrier's reason code.
+	Reason string `json:"reason"`
+	// What to fix, in the carrier's words (redacted).
+	Description string `json:"description"`
+	// A carrier help page about it, when they gave one.
+	Link *string `json:"link"`
 }
 
 // SmsNumberSenderIdGroupCountriesItem is the `SmsNumberSenderIdGroupCountriesItem` object from the public API.
@@ -152,9 +163,10 @@ type Sms struct {
 	// `last_error`). Null otherwise. Only `carrier_undelivered` (the carrier
 	// accepted the text, then could not deliver it) is billed; every other failure
 	// is not charged. Billing when a scheduled text was due: `quota_exceeded`,
-	// `overage_cap_exceeded`, `subscription_inactive`; `unsupported_country`: SMS to
-	// the country was paused; workspace holds: `workspace_suspended`,
-	// `sms_brand_blocked`; the sender: `sender_not_active`,
+	// `overage_cap_exceeded`, `subscription_inactive`, `sms_not_in_plan` (the paid
+	// plan ended and its grace is over, or it is 100% discounted);
+	// `unsupported_country`: SMS to the country was paused; workspace holds:
+	// `workspace_suspended`, `sms_brand_blocked`; the sender: `sender_not_active`,
 	// `sender_registration_incomplete`, `sender_action_required`,
 	// `sender_use_case_mismatch`; `quiet_hours_unsatisfiable`: marketing that could
 	// not go out inside the recipient's window; ours: `channel_unavailable`,
@@ -272,4 +284,8 @@ type SmsNumber struct {
 	// carries the same `sender_id_group` describing the whole set.
 	SenderIdGroup *SmsNumberSenderIdGroup `json:"sender_id_group"`
 	CreatedAt string `json:"created_at"`
+	// What carriers sent back, item by item, when a toll-free verification needs
+	// changes (`action_required`); null otherwise. Fix it on the brand or the
+	// messaging program, then POST /sms/numbers/{id}/resubmit (ADR-0159).
+	Feedback []SmsNumberFeedbackItem `json:"feedback,omitempty"`
 }

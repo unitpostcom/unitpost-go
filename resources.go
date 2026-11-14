@@ -34,8 +34,9 @@ func optParams(params []map[string]string) map[string]string {
 // channel-scoped Templates, Campaigns and Topics resources and the SMS setup
 // (MessagingPrograms, TestDestinations, ConsentSetups, Billing, Registrations,
 // Quotes). Carrier purchases go through Quotes (a price, then a confirm with
-// the opt-in sms:purchase scope); releasing a number, identity documents and
-// toll-free verification stay in the dashboard.
+// the opt-in sms:purchase scope); a brand's documents and the carrier
+// send-backs work here too (ADR-0159), and so do releasing a number, removing
+// a 10DLC setup and replacing a brand registration (ADR-0160).
 type Sms struct {
 	http              *httpClient
 	Templates         *SmsTemplates
@@ -341,8 +342,10 @@ func (x *SmsQuotes) Confirm(ctx context.Context, id string, body any, opts ...Re
 // SmsRegistrations are carrier registrations: 10DLC brand and campaign
 // registrations and toll-free verifications, with their review state and the
 // carrier's feedback. Submitting one is a paid order through Sms.Quotes;
-// toll-free verification and removing one stay in the dashboard. Needs
-// sms:read.
+// fixing a campaign carriers sent back is Resubmit, a failed number whose fee
+// is paid is RequestNumber, taking down a 10DLC setup is Remove, and archiving
+// an approved brand registration to register it again is Replace. Reads need
+// sms:read, the writes sms:manage.
 type SmsRegistrations struct{ http *httpClient }
 
 // List lists your registrations, newest first (cursor-paginated). params is
@@ -350,6 +353,56 @@ type SmsRegistrations struct{ http *httpClient }
 // number it backs ("sender") and one "setup_state".
 func (x *SmsRegistrations) List(ctx context.Context, params ...map[string]string) (any, error) {
 	return x.http.request(ctx, "GET", "/sms/registrations", q(optParams(params)), nil, "")
+}
+
+// Get returns one registration ("sreg_…"), as List reads it. Read a resubmit,
+// a removal or a replacement back with it.
+func (x *SmsRegistrations) Get(ctx context.Context, id string) (any, error) {
+	return x.http.request(ctx, "GET", "/sms/registrations/"+enc(id), nil, nil, "")
+}
+
+// Resubmit resubmits a 10DLC campaign carriers sent back (free), after fixing
+// what its feedback names: an optional "opt_in_screenshot_file_id", or
+// "acknowledge_unchanged" when the fix was made outside Unitpost. Pass
+// WithIdempotencyKey so a retry resubmits once; without it the SDK mints a
+// key per call.
+func (x *SmsRegistrations) Resubmit(ctx context.Context, id string, body any, opts ...RequestOption) (any, error) {
+	return x.http.request(ctx, "POST", "/sms/registrations/"+enc(id)+"/resubmit", nil, body, idempotencyKeyFrom(opts))
+}
+
+// RequestNumber requests a campaign's number again after it failed, when its
+// fee is already committed (free). body takes no fields today: pass nil or
+// map[string]any{}. A number the fee doesn't cover answers 409
+// quote_required: order it through Sms.Quotes ("ten_dlc_number"). Pass
+// WithIdempotencyKey so a retry requests one number; without it the SDK mints
+// a key per call.
+func (x *SmsRegistrations) RequestNumber(ctx context.Context, id string, body any, opts ...RequestOption) (any, error) {
+	return x.http.request(ctx, "POST", "/sms/registrations/"+enc(id)+"/number", nil, body, idempotencyKeyFrom(opts))
+}
+
+// Remove removes a 10DLC setup: it takes down a campaign registration
+// ("us_ten_dlc_campaign") that has no active number. The carrier registration
+// is deleted, the campaign's monthly fee ends (no proration) and the
+// registration reads "archived_at" from then on. body takes no fields today:
+// pass nil or map[string]any{}. A campaign with a number answers 409
+// resource_in_use (release the number first with Sms.ReleaseNumber); one
+// under carrier review answers 409 conflict. Pass WithIdempotencyKey so a
+// retry removes once; without it the SDK mints a key per call.
+func (x *SmsRegistrations) Remove(ctx context.Context, id string, body any, opts ...RequestOption) (any, error) {
+	return x.http.request(ctx, "POST", "/sms/registrations/"+enc(id)+"/remove", nil, body, idempotencyKeyFrom(opts))
+}
+
+// Replace archives an approved 10DLC brand registration ("us_ten_dlc_brand")
+// so the brand can be registered again (corrected legal details, a new owner
+// of the EIN). The brand unlocks for Sms.UpdateBrand, and the new
+// registration is a quote and its confirm ("ten_dlc_brand_registration").
+// Nothing changes at the carrier and nothing is charged here. body takes no
+// fields today: pass nil or map[string]any{}. Refused while a number on the
+// brand isn't released or a 10DLC setup on it isn't removed (409
+// resource_in_use, with "dependents"). Pass WithIdempotencyKey so a retry
+// replaces once; without it the SDK mints a key per call.
+func (x *SmsRegistrations) Replace(ctx context.Context, id string, body any, opts ...RequestOption) (any, error) {
+	return x.http.request(ctx, "POST", "/sms/registrations/"+enc(id)+"/replace", nil, body, idempotencyKeyFrom(opts))
 }
 
 // Send sends one SMS. Pass WithIdempotencyKey to make a retried send safe across
@@ -423,12 +476,79 @@ func (x *Sms) UpdateBrand(ctx context.Context, id string, body any) (any, error)
 	return x.http.request(ctx, "PATCH", "/sms/brands/"+enc(id), nil, body, "")
 }
 
+// ListBrandDocuments lists a brand's documents ("sdoc_" ids): the files and
+// numbers a country's carriers ask for, one per slot ("kind", plus "carrier" /
+// "country" for a variant). Needs sms:read.
+func (x *Sms) ListBrandDocuments(ctx context.Context, brandID string) (any, error) {
+	return x.http.request(ctx, "GET", "/sms/brands/"+enc(brandID)+"/documents", nil, nil, "")
+}
+
+// AddBrandDocument adds a document to a brand's slot (201): a file kind takes
+// "file_id" (a file from Files.Create, purpose "sms_document", or
+// "sms_opt_in_evidence" for "opt_in_screenshot"), a text kind takes "text". A
+// document in an occupied slot replaces the current one. Needs sms:manage.
+// Pass WithIdempotencyKey so a retry adds one document; without it the SDK
+// mints a key per call.
+func (x *Sms) AddBrandDocument(ctx context.Context, brandID string, body any, opts ...RequestOption) (any, error) {
+	return x.http.request(ctx, "POST", "/sms/brands/"+enc(brandID)+"/documents", nil, body, idempotencyKeyFrom(opts))
+}
+
+// GetBrandDocument returns one brand document. Needs sms:read.
+func (x *Sms) GetBrandDocument(ctx context.Context, brandID, documentID string) (any, error) {
+	return x.http.request(ctx, "GET", "/sms/brands/"+enc(brandID)+"/documents/"+enc(documentID), nil, nil, "")
+}
+
+// RemoveBrandDocument removes a brand document from its slot. Needs
+// sms:manage.
+func (x *Sms) RemoveBrandDocument(ctx context.Context, brandID, documentID string) (any, error) {
+	return x.http.request(ctx, "DELETE", "/sms/brands/"+enc(brandID)+"/documents/"+enc(documentID), nil, nil, "")
+}
+
+// BrandDocumentUrl returns a 5-minute signed link to a file document's bytes.
+// The link is a bearer credential: fetch it yourself, don't log or share it.
+// An identity document needs sms:manage; the rest sms:read.
+func (x *Sms) BrandDocumentUrl(ctx context.Context, brandID, documentID string) (any, error) {
+	return x.http.request(ctx, "GET", "/sms/brands/"+enc(brandID)+"/documents/"+enc(documentID)+"/url", nil, nil, "")
+}
+
 // Numbers lists SMS phone numbers. Only numbers with status "active" can send. A
 // ten_dlc number has no phone_number until carriers approve it, and a simulator
 // number only reaches verified test destinations. Order a number through
-// Sms.Quotes; releasing one stays in the dashboard.
+// Sms.Quotes; release one with ReleaseNumber.
 func (x *Sms) Numbers(ctx context.Context, params map[string]string) (any, error) {
 	return x.http.request(ctx, "GET", "/sms/numbers", q(params), nil, "")
+}
+
+// GetNumber returns one number, or one country of a Sender ID ("snum_…"), as
+// Numbers reads it: its status, what carriers sent back ("feedback") and its
+// use case. Read a resubmit, a retry or a release back with it. Needs
+// sms:read.
+func (x *Sms) GetNumber(ctx context.Context, numberID string) (any, error) {
+	return x.http.request(ctx, "GET", "/sms/numbers/"+enc(numberID), nil, nil, "")
+}
+
+// ReleaseNumber releases a number, or one country of a Sender ID, back to the
+// carrier. PERMANENT: it stops sending at once, reads "released" from then on
+// and can't be had back; its monthly fee ends with it (no proration), and a
+// 10DLC number's campaign registration goes with it. body is nil,
+// map[string]any{} or {"force": true}. Refused while an automation uses it
+// (409 resource_in_use) and, unless "force" is true, while campaigns are
+// scheduled on it or texts are queued through it (409 sender_release_blocked,
+// counts in error.blockers). Releasing a released number answers it. Needs
+// sms:manage. Pass WithIdempotencyKey so a retry releases once; without it
+// the SDK mints a key per call.
+func (x *Sms) ReleaseNumber(ctx context.Context, numberID string, body any, opts ...RequestOption) (any, error) {
+	return x.http.request(ctx, "POST", "/sms/numbers/"+enc(numberID)+"/release", nil, body, idempotencyKeyFrom(opts))
+}
+
+// ResubmitNumber resubmits a toll-free verification carriers sent back (free):
+// fix what the number's "feedback" names, then send the new evidence
+// ("opt_in_evidence_file_id", or "reuse_opt_in_evidence"), a
+// "business_registration_document_file_id", "consent_source_url", or
+// "acknowledge_unchanged". Needs sms:manage. Pass WithIdempotencyKey so a
+// retry resubmits once; without it the SDK mints a key per call.
+func (x *Sms) ResubmitNumber(ctx context.Context, numberID string, body any, opts ...RequestOption) (any, error) {
+	return x.http.request(ctx, "POST", "/sms/numbers/"+enc(numberID)+"/resubmit", nil, body, idempotencyKeyFrom(opts))
 }
 
 // Stats returns SMS delivery stats over a rolling window ("days": 1–365,
@@ -1383,6 +1503,44 @@ func (x *Suppressions) Get(ctx context.Context, idOrEmail string) (any, error) {
 }
 func (x *Suppressions) Delete(ctx context.Context, idOrEmail string) (any, error) {
 	return x.http.request(ctx, "DELETE", "/suppressions/"+enc(idOrEmail), nil, nil, "")
+}
+
+// Files are bytes handed to the API for one "purpose" ("file_" ids), which an
+// operation then takes by "file_id" (a brand document, the SMS opt-in
+// evidence on a quote or resubmission, a library image, the logo). A file is
+// private, metadata-only on the API, and expires 24 hours after it is
+// created; what uses it keeps its own copy. sms_* purposes need sms:manage,
+// "image" needs templates:write or branding:write (ADR-0159).
+type Files struct{ http *httpClient }
+
+// List lists the workspace's unexpired files, newest first (cursor-paginated).
+// params: "limit", "after", "before", "purpose".
+func (x *Files) List(ctx context.Context, params map[string]string) (any, error) {
+	return x.http.request(ctx, "GET", "/files", q(params), nil, "")
+}
+
+// Create creates a file (201) one of three ways: a public https "url"
+// (fetched once, no redirects, no private addresses), base64 "data" with its
+// "content_type" (up to about 4 MB), or neither, with "content_type" and
+// "size_bytes": an upload session, whose "upload" says where to PUT the
+// bytes, with exactly its "headers". The bytes decide the type. Pass
+// WithIdempotencyKey so a retry makes one file; without it the SDK mints a
+// key per call.
+func (x *Files) Create(ctx context.Context, body any, opts ...RequestOption) (any, error) {
+	return x.http.request(ctx, "POST", "/files", nil, body, idempotencyKeyFrom(opts))
+}
+
+// Get returns one file's metadata (never its bytes). Reading an
+// "awaiting_upload" file checks its upload, which makes it "ready" or
+// "failed".
+func (x *Files) Get(ctx context.Context, id string) (any, error) {
+	return x.http.request(ctx, "GET", "/files/"+enc(id), nil, nil, "")
+}
+
+// Delete deletes a file before it expires. What already used it keeps its
+// copy.
+func (x *Files) Delete(ctx context.Context, id string) (any, error) {
+	return x.http.request(ctx, "DELETE", "/files/"+enc(id), nil, nil, "")
 }
 
 // LibraryImages is the workspace's image library: the images a template

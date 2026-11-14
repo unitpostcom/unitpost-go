@@ -27,6 +27,8 @@ type Client struct {
 	BrandKits    *BrandKits
 	// LibraryImages is the image library templates embed (/img/… paths).
 	LibraryImages *LibraryImages
+	// Files are files handed to the API for one purpose, used by file_id.
+	Files *Files
 	// Branding is the email footer and unsubscribe page look; its writes need
 	// branding:write (on no key preset).
 	Branding *Branding
@@ -57,6 +59,7 @@ func NewWithOptions(opts Options) *Client {
 		Segments:      &Segments{http: h},
 		BrandKits:     &BrandKits{http: h},
 		LibraryImages: &LibraryImages{http: h},
+		Files:         &Files{http: h},
 		Branding:      &Branding{http: h},
 		Workspace:     &Workspace{http: h},
 		Webhooks:      &Webhooks{http: h},

@@ -414,6 +414,19 @@ func (x *Sms) Get(ctx context.Context, id string) (any, error) {
 	return x.http.request(ctx, "GET", "/sms/"+enc(id), nil, nil, "")
 }
 
+// AddContact makes the sender of a received text a contact, or files the text
+// under the contact that already has the number. Phone only: no name and no
+// consent (texting a number isn't consent to marketing). Every earlier text
+// with that number that no contact holds is filed under the contact too, so
+// "contact_id" reads it from then on. Answers the contact: 201 when it is
+// new, 200 when it existed, so a retry is safe. It counts against the plan's
+// contacts (403 limit_reached when full), and a number that texted STOP stays
+// opted out. A text you sent is refused (409). Needs contacts:write and
+// sms:read.
+func (x *Sms) AddContact(ctx context.Context, id string) (any, error) {
+	return x.http.request(ctx, "POST", "/sms/"+enc(id)+"/contact", nil, map[string]any{}, "")
+}
+
 // Update cancels a queued/scheduled SMS ({"cancel": true}, credit refunded)
 // or moves a scheduled one ({"scheduled_at": "<ISO 8601>"}).
 func (x *Sms) Update(ctx context.Context, id string, body any) (any, error) {
@@ -549,6 +562,36 @@ func (x *Sms) ReleaseNumber(ctx context.Context, numberID string, body any, opts
 // retry resubmits once; without it the SDK mints a key per call.
 func (x *Sms) ResubmitNumber(ctx context.Context, numberID string, body any, opts ...RequestOption) (any, error) {
 	return x.http.request(ctx, "POST", "/sms/numbers/"+enc(numberID)+"/resubmit", nil, body, idempotencyKeyFrom(opts))
+}
+
+// ListJoinKeywords lists the words people can text this number ("snum_…") to
+// sign up (text-to-join). "registration_warning" is set when the number's
+// carrier registration doesn't list keyword opt-in, so carriers could flag
+// the sign-ups. Needs sms:read.
+func (x *Sms) ListJoinKeywords(ctx context.Context, numberID string) (any, error) {
+	return x.http.request(ctx, "GET", "/sms/numbers/"+enc(numberID)+"/join-keywords", nil, nil, "")
+}
+
+// AddJoinKeyword adds a join keyword to a number: body is {"keyword": "JOIN"}
+// with an optional "segment_id" and/or "topic_id". A text that is exactly
+// this word (any case) gets the double opt-in request ("Reply YES to get …
+// texts"); the YES records marketing consent, makes the texter a contact if
+// they aren't one, and adds them to the static segment and/or the SMS topic.
+// A keyword is never consent by itself and never lifts a STOP. STOP, HELP,
+// START, YES and their variants are refused; at most 10 per number, and only
+// on numbers people can text back. Answers the keyword with
+// "registration_warning": 201 when added, 200 when the same keyword with the
+// same settings is already there, so a retry is safe (the same word with
+// other settings is 409). Needs sms:manage.
+func (x *Sms) AddJoinKeyword(ctx context.Context, numberID string, body any) (any, error) {
+	return x.http.request(ctx, "POST", "/sms/numbers/"+enc(numberID)+"/join-keywords", nil, body, "")
+}
+
+// RemoveJoinKeyword removes a join keyword ("sjk_…"): it stops answering.
+// People who already joined keep their consent, contact and memberships.
+// Needs sms:manage.
+func (x *Sms) RemoveJoinKeyword(ctx context.Context, numberID, keywordID string) (any, error) {
+	return x.http.request(ctx, "DELETE", "/sms/numbers/"+enc(numberID)+"/join-keywords/"+enc(keywordID), nil, nil, "")
 }
 
 // Stats returns SMS delivery stats over a rolling window ("days": 1–365,

@@ -141,3 +141,48 @@ func TestSmsLifecycleWritesTakeAKey(t *testing.T) {
 		}
 	}
 }
+
+// Two-way SMS: adding a texter as a contact and text-to-join keywords. The
+// routes answer a repeat with 200, so the writes carry no Idempotency-Key.
+func TestSmsAddContactAndJoinKeywords(t *testing.T) {
+	type hit struct{ method, path, body string }
+	var hits []hit
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		b, _ := io.ReadAll(r.Body)
+		hits = append(hits, hit{r.Method, r.URL.Path, string(b)})
+		if r.Method == "DELETE" {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+		io.WriteString(w, `{"id":"x"}`)
+	}))
+	defer srv.Close()
+	c := NewWithOptions(Options{APIKey: "test_key", BaseURL: srv.URL, HTTPClient: srv.Client()})
+	ctx := context.Background()
+	if _, err := c.Sms.AddContact(ctx, "sms_1"); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := c.Sms.ListJoinKeywords(ctx, "snum_1"); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := c.Sms.AddJoinKeyword(ctx, "snum_1", map[string]any{"keyword": "JOIN"}); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := c.Sms.RemoveJoinKeyword(ctx, "snum_1", "sjk_1"); err != nil {
+		t.Fatal(err)
+	}
+	want := []hit{
+		{"POST", "/api/v1/sms/sms_1/contact", `{}`},
+		{"GET", "/api/v1/sms/numbers/snum_1/join-keywords", ``},
+		{"POST", "/api/v1/sms/numbers/snum_1/join-keywords", `{"keyword":"JOIN"}`},
+		{"DELETE", "/api/v1/sms/numbers/snum_1/join-keywords/sjk_1", ``},
+	}
+	if len(hits) != len(want) {
+		t.Fatalf("hits = %+v", hits)
+	}
+	for i, w := range want {
+		if hits[i] != w {
+			t.Fatalf("hit %d = %+v, want %+v", i, hits[i], w)
+		}
+	}
+}

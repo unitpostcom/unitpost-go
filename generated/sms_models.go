@@ -174,6 +174,14 @@ type Sms struct {
 	// `suspected_pumping`: stopped before the carrier as suspected SMS pumping. The
 	// same code is `failed.code` on the `sms.failed` webhook.
 	FailureCode *SmsFailureCode `json:"failure_code,omitempty"`
+	// The contact this text is filed under (`con_…`), or null: an inbound text from
+	// a number that isn't a contact. Make one with POST /sms/{id}/contact.
+	ContactId *string `json:"contact_id,omitempty"`
+	// The other party (the sender of an inbound text, the recipient of an outbound
+	// one) can't be texted by this workspace now: they texted STOP or the number is
+	// suppressed. A reply to them is refused (`opted_out`) until they text START or
+	// UNSTOP. As of this read.
+	ParticipantOptedOut *bool `json:"participant_opted_out,omitempty"`
 }
 
 // SmsBrand is the `SmsBrand` object from the public API.

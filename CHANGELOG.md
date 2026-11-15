@@ -9,6 +9,7 @@ change that bumps the version (docs/sdk/RELEASING.md).
 
 ## Unreleased
 
+- `Sms.AddContact(ctx, id)`, `Sms.ListJoinKeywords(ctx, numberID)`, `Sms.AddJoinKeyword(ctx, numberID, body)`, `Sms.RemoveJoinKeyword(ctx, numberID, keywordID)`: add a texter as a contact and manage text-to-join keywords.
 - `SmsFailureCode` gains `sms_not_in_plan`: SMS wasn't on the plan when a text was due (the paid plan ended after its grace, or the plan is 100% discounted). Not charged.
 - SMS numbers and registrations, start to finish (ADR-0160, 2026-11-12):
   `Sms.GetNumber(ctx, id)`, `Sms.ReleaseNumber(ctx, id, body, opts...)`

@@ -9,6 +9,11 @@ change that bumps the version (docs/sdk/RELEASING.md).
 
 ## Unreleased
 
+- `OrganizationClient` gains `SharedPlan`: `Get`, `ListWorkspaces`, `AddWorkspace`, `UpdateWorkspace`, `RemoveWorkspace` (the organization's shared plan; adding and removing take an optional `WithIdempotencyKey`, or the SDK mints one). Reads need `organizations:read`; the three writes need `organizations:billing`. Buying, upgrading or ending the shared plan stays in the dashboard.
+- SMS tags: `"tags": []map[string]any{{"name": …, "value": …}}` in `Sms.Send`'s body (up to 10) and the `"tag"` filter on `Sms.List` / `Sms.ListAll` (`tag` is `name:value`; several comma-separated must all match; received texts have none). `Sms` carries `Tags` (`SmsTagsItem`).
+- `OrganizationClient` iterators: `Webhooks.ListAll`, `Webhooks.ListAllDeliveries(webhookID, …)` and `Usage.ListAll` (pages by `workspace_id`). The delivery log needs `organizations:write`.
+- `SpendCaps` (new, ADR-0172): the workspace's monthly spend caps. `Get(ctx)` reads the SMS-purchase cap, its `max_cents` and what it counted this UTC month; `Update(ctx, body)` sets or clears it and needs `spend_caps:write`, which no key preset includes. A workspace its organization pays for answers `403 billed_by_organization`.
+- `OrganizationClient` (new, ADR-0171): the second client, for an organization key (`ok_live_…`). `NewOrganization()` reads `UNITPOST_ORG_KEY` and `UNITPOST_ORGANIZATION_ID`; `NewOrganizationWithOptions(OrganizationOptions{...})` takes them explicitly. `Workspaces` (list, `ListAll`, create, get, update, close, restore), `WorkspaceKeys`, `Webhooks`, `Usage` and `PlanQuotes`, over the same transport, retries and errors as `Client`. `Client` has no organization methods.
 - `Sms.AddContact(ctx, id)`, `Sms.ListJoinKeywords(ctx, numberID)`, `Sms.AddJoinKeyword(ctx, numberID, body)`, `Sms.RemoveJoinKeyword(ctx, numberID, keywordID)`: add a texter as a contact and manage text-to-join keywords.
 - `SmsFailureCode` gains `sms_not_in_plan`: SMS wasn't on the plan when a text was due (the paid plan ended after its grace, or the plan is 100% discounted). Not charged.
 - SMS numbers and registrations, start to finish (ADR-0160, 2026-11-12):

@@ -68,6 +68,12 @@ type SmsError struct {
 	Message string `json:"message"`
 }
 
+// SmsTagsItem is the `SmsTagsItem` object from the public API.
+type SmsTagsItem struct {
+	Name string `json:"name"`
+	Value string `json:"value"`
+}
+
 // Who carriers reach about the brand (the email is `contact_email`).
 type SmsBrandContact struct {
 	FirstName *string `json:"first_name"`
@@ -150,6 +156,8 @@ type Sms struct {
 	// opt_out). False for an exact keyword such as STOP (already recorded) and on
 	// outbound.
 	LooksLikeOptOut bool `json:"looks_like_opt_out"`
+	// The other party's country (ISO 3166-1 alpha-2): the recipient's on a send, the
+	// sender's on a received text. Null when the number's country isn't known.
 	Country *string `json:"country"`
 	ScheduledAt *string `json:"scheduled_at"`
 	// The sentence for why the text failed or was skipped. Match on `failure_code`
@@ -182,6 +190,9 @@ type Sms struct {
 	// suppressed. A reply to them is refused (`opted_out`) until they text START or
 	// UNSTOP. As of this read.
 	ParticipantOptedOut *bool `json:"participant_opted_out,omitempty"`
+	// The tags the text was sent with (`tags` on `POST /sms`), in the order given.
+	// Empty for a text sent without tags and for received texts.
+	Tags []SmsTagsItem `json:"tags,omitempty"`
 }
 
 // SmsBrand is the `SmsBrand` object from the public API.

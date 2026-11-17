@@ -437,8 +437,11 @@ func (x *Sms) Update(ctx context.Context, id string, body any) (any, error) {
 // "after", "before", "direction", "status", "from", "to", "participant",
 // "contact_id", "campaign_id", "created_after", "created_before", "q" (the
 // message text; 3 or more digits also match either number; at most 200
-// characters), "type" ("transactional" or "marketing") and "sender_id" (a
-// number's "snum_…" id: its texts, both directions). A "q", "type" or
+// characters), "type" ("transactional" or "marketing"), "sender_id" (a
+// number's "snum_…" id: its texts, both directions) and "tag" (texts sent with
+// that tag, "name:value"; several comma-separated, e.g.
+// "customer:acme,flow:reminders", must all match; received texts have none).
+// A "q", "type" or
 // "sender_id" value the list can't apply is ignored and named in the Unitpost-Warning
 // response header; Unitpost-Strict: true refuses it instead.
 func (x *Sms) List(ctx context.Context, params map[string]string) (any, error) {
@@ -1727,4 +1730,27 @@ type Usage struct{ http *httpClient }
 
 func (x *Usage) Get(ctx context.Context) (any, error) {
 	return x.http.request(ctx, "GET", "/usage", nil, nil, "")
+}
+
+// SpendCaps is the workspace's monthly spend caps and what each counted this
+// UTC calendar month. sms_purchases caps the SMS carrier purchases API keys
+// and apps confirm (sms.quotes.confirm). Reading needs sms:read, sms:purchase
+// or spend_caps:write; Update needs spend_caps:write, which no key preset
+// includes and only the workspace owner can give a key.
+type SpendCaps struct{ http *httpClient }
+
+// Get returns {object: "spend_caps", sms_purchases: {cap_cents, max_cents,
+// spent_cents, period_start, period_end}}. A cap_cents of null means none, so
+// every API purchase is refused with 403 api_spend_cap_not_set; the cap that
+// applies is the lower of cap_cents and max_cents.
+func (x *SpendCaps) Get(ctx context.Context) (any, error) {
+	return x.http.request(ctx, "GET", "/spend-caps", nil, nil, "")
+}
+
+// Update sets caps: {sms_purchases: {cap_cents: whole cents >= 0, or null}}.
+// Only the caps you send change; null clears it. A workspace its organization
+// pays for answers 403 billed_by_organization: its organization sets the cap
+// with sms_purchases_cap_cents on the organization's workspace update.
+func (x *SpendCaps) Update(ctx context.Context, body any) (any, error) {
+	return x.http.request(ctx, "PATCH", "/spend-caps", nil, body, "")
 }

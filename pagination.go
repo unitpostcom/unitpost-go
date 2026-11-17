@@ -19,6 +19,7 @@ type Pager struct {
 	http    *httpClient
 	path    string
 	params  map[string]string
+	cursor  string
 	after   string
 	buf     []map[string]any
 	current map[string]any
@@ -35,12 +36,19 @@ func newPager(h *httpClient, path string, params map[string]string) *Pager {
 	for k, v := range params {
 		cp[k] = v
 	}
-	p := &Pager{http: h, path: path, params: cp, after: cp["after"]}
+	p := &Pager{http: h, path: path, params: cp, cursor: "id", after: cp["after"]}
 	// Refused up front: a `before` used to ride along with the moving `after`
 	// and 422 on the second page.
 	if cp["before"] != "" {
 		p.err = ErrForwardOnly
 	}
+	return p
+}
+
+// byCursor sets the row field the next `after` reads: "id" by default, another
+// key for a list paged by it (organization usage rows page by "workspace_id").
+func (p *Pager) byCursor(field string) *Pager {
+	p.cursor = field
 	return p
 }
 
@@ -91,7 +99,7 @@ func (p *Pager) fetch(ctx context.Context) {
 		return
 	}
 	last, _ := rows[len(rows)-1].(map[string]any)
-	id, _ := last["id"].(string)
+	id, _ := last[p.cursor].(string)
 	if id == "" {
 		p.done = true
 		return

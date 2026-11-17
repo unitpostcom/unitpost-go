@@ -43,6 +43,7 @@ type Client struct {
 	Suppressions *Suppressions
 	Jobs         *Jobs
 	Usage        *Usage
+	SpendCaps    *SpendCaps // monthly spend caps (Get, Update); Update needs spend_caps:write, on no key preset
 }
 
 // New reads UNITPOST_API_KEY from the environment.
@@ -68,5 +69,6 @@ func NewWithOptions(opts Options) *Client {
 		Suppressions:  &Suppressions{http: h},
 		Jobs:          &Jobs{http: h},
 		Usage:         &Usage{http: h},
+		SpendCaps:     &SpendCaps{http: h},
 	}
 }

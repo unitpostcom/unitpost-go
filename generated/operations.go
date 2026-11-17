@@ -18,6 +18,8 @@ type Operation struct {
 	ResponseSchema string
 	IsList         bool
 	ListItemSchema string
+	// "organization": only the organization client (NewOrganization) calls it (ADR-0171).
+	Credential     string
 }
 
 const APIVersion = "v1"
@@ -36,6 +38,7 @@ var Operations = []Operation{
 		ResponseSchema: "ApiKeyCreated",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "apiKeys.delete",
@@ -50,6 +53,7 @@ var Operations = []Operation{
 		ResponseSchema: "",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "apiKeys.list",
@@ -64,6 +68,7 @@ var Operations = []Operation{
 		ResponseSchema: "",
 		IsList: true,
 		ListItemSchema: "ApiKey",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "apiKeys.usage",
@@ -78,6 +83,7 @@ var Operations = []Operation{
 		ResponseSchema: "ApiKeyUsage",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "branding.get",
@@ -92,6 +98,7 @@ var Operations = []Operation{
 		ResponseSchema: "Branding",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "branding.removeLogo",
@@ -106,6 +113,7 @@ var Operations = []Operation{
 		ResponseSchema: "Branding",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "branding.setLogo",
@@ -120,6 +128,7 @@ var Operations = []Operation{
 		ResponseSchema: "Branding",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "branding.update",
@@ -134,6 +143,7 @@ var Operations = []Operation{
 		ResponseSchema: "Branding",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "brandkits.acceptImport",
@@ -148,6 +158,7 @@ var Operations = []Operation{
 		ResponseSchema: "BrandImportAccepted",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "brandkits.addGraphic",
@@ -162,6 +173,7 @@ var Operations = []Operation{
 		ResponseSchema: "BrandKitGraphicAdded",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "brandkits.cancelImport",
@@ -176,6 +188,7 @@ var Operations = []Operation{
 		ResponseSchema: "BrandImport",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "brandkits.create",
@@ -190,6 +203,7 @@ var Operations = []Operation{
 		ResponseSchema: "BrandKit",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "brandkits.delete",
@@ -204,6 +218,7 @@ var Operations = []Operation{
 		ResponseSchema: "",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "brandkits.get",
@@ -218,6 +233,7 @@ var Operations = []Operation{
 		ResponseSchema: "BrandKit",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "brandkits.getImport",
@@ -232,6 +248,7 @@ var Operations = []Operation{
 		ResponseSchema: "BrandImport",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "brandkits.import",
@@ -246,6 +263,7 @@ var Operations = []Operation{
 		ResponseSchema: "BrandImport",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "brandkits.list",
@@ -260,6 +278,7 @@ var Operations = []Operation{
 		ResponseSchema: "BrandKitList",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "brandkits.reset",
@@ -274,6 +293,7 @@ var Operations = []Operation{
 		ResponseSchema: "BrandKit",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "brandkits.setDefault",
@@ -288,6 +308,7 @@ var Operations = []Operation{
 		ResponseSchema: "BrandKit",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "brandkits.update",
@@ -302,6 +323,7 @@ var Operations = []Operation{
 		ResponseSchema: "BrandKit",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "contactFields.create",
@@ -316,6 +338,7 @@ var Operations = []Operation{
 		ResponseSchema: "ContactField",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "contactFields.delete",
@@ -330,6 +353,7 @@ var Operations = []Operation{
 		ResponseSchema: "Job",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "contactFields.get",
@@ -344,6 +368,7 @@ var Operations = []Operation{
 		ResponseSchema: "ContactField",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "contactFields.list",
@@ -358,6 +383,7 @@ var Operations = []Operation{
 		ResponseSchema: "",
 		IsList: true,
 		ListItemSchema: "ContactField",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "contactFields.rename",
@@ -372,6 +398,7 @@ var Operations = []Operation{
 		ResponseSchema: "ContactField",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "contactFields.update",
@@ -386,6 +413,7 @@ var Operations = []Operation{
 		ResponseSchema: "ContactField",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "contacts.activity",
@@ -400,6 +428,7 @@ var Operations = []Operation{
 		ResponseSchema: "",
 		IsList: true,
 		ListItemSchema: "ContactActivity",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "contacts.addresses",
@@ -414,6 +443,7 @@ var Operations = []Operation{
 		ResponseSchema: "",
 		IsList: true,
 		ListItemSchema: "ContactAddress",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "contacts.cancelImport",
@@ -428,6 +458,7 @@ var Operations = []Operation{
 		ResponseSchema: "ContactImport",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "contacts.create",
@@ -442,6 +473,7 @@ var Operations = []Operation{
 		ResponseSchema: "Contact",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "contacts.delete",
@@ -456,6 +488,7 @@ var Operations = []Operation{
 		ResponseSchema: "",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "contacts.export",
@@ -470,6 +503,7 @@ var Operations = []Operation{
 		ResponseSchema: "Job",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "contacts.get",
@@ -484,6 +518,7 @@ var Operations = []Operation{
 		ResponseSchema: "Contact",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "contacts.getImport",
@@ -498,6 +533,7 @@ var Operations = []Operation{
 		ResponseSchema: "ContactImport",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "contacts.import",
@@ -512,6 +548,7 @@ var Operations = []Operation{
 		ResponseSchema: "ContactImport",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "contacts.list",
@@ -526,6 +563,7 @@ var Operations = []Operation{
 		ResponseSchema: "",
 		IsList: true,
 		ListItemSchema: "Contact",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "contacts.listImports",
@@ -540,6 +578,7 @@ var Operations = []Operation{
 		ResponseSchema: "",
 		IsList: true,
 		ListItemSchema: "ContactImport",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "contacts.listSegments",
@@ -554,6 +593,7 @@ var Operations = []Operation{
 		ResponseSchema: "",
 		IsList: true,
 		ListItemSchema: "ContactSegment",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "contacts.retryImport",
@@ -568,6 +608,7 @@ var Operations = []Operation{
 		ResponseSchema: "ContactImport",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "contacts.update",
@@ -582,6 +623,7 @@ var Operations = []Operation{
 		ResponseSchema: "Contact",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.batch",
@@ -596,6 +638,7 @@ var Operations = []Operation{
 		ResponseSchema: "BatchSendResult",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.campaigns.cancel",
@@ -610,6 +653,7 @@ var Operations = []Operation{
 		ResponseSchema: "Campaign",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.campaigns.create",
@@ -624,6 +668,7 @@ var Operations = []Operation{
 		ResponseSchema: "Campaign",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.campaigns.delete",
@@ -638,6 +683,7 @@ var Operations = []Operation{
 		ResponseSchema: "",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.campaigns.duplicate",
@@ -652,6 +698,7 @@ var Operations = []Operation{
 		ResponseSchema: "Campaign",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.campaigns.get",
@@ -666,6 +713,7 @@ var Operations = []Operation{
 		ResponseSchema: "Campaign",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.campaigns.list",
@@ -680,6 +728,7 @@ var Operations = []Operation{
 		ResponseSchema: "",
 		IsList: true,
 		ListItemSchema: "Campaign",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.campaigns.listAffected",
@@ -694,6 +743,7 @@ var Operations = []Operation{
 		ResponseSchema: "",
 		IsList: true,
 		ListItemSchema: "CampaignAffectedRecipient",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.campaigns.listRecipients",
@@ -708,6 +758,7 @@ var Operations = []Operation{
 		ResponseSchema: "",
 		IsList: true,
 		ListItemSchema: "CampaignRecipient",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.campaigns.listStats",
@@ -722,6 +773,7 @@ var Operations = []Operation{
 		ResponseSchema: "",
 		IsList: true,
 		ListItemSchema: "CampaignStats",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.campaigns.pause",
@@ -736,6 +788,7 @@ var Operations = []Operation{
 		ResponseSchema: "Campaign",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.campaigns.removeAffected",
@@ -750,6 +803,7 @@ var Operations = []Operation{
 		ResponseSchema: "CampaignQualityRemoval",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.campaigns.requestReview",
@@ -764,6 +818,7 @@ var Operations = []Operation{
 		ResponseSchema: "CampaignReviewRequest",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.campaigns.reschedule",
@@ -778,6 +833,7 @@ var Operations = []Operation{
 		ResponseSchema: "Campaign",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.campaigns.resume",
@@ -792,6 +848,7 @@ var Operations = []Operation{
 		ResponseSchema: "Campaign",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.campaigns.send",
@@ -806,6 +863,7 @@ var Operations = []Operation{
 		ResponseSchema: "Campaign",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.campaigns.stats",
@@ -820,6 +878,7 @@ var Operations = []Operation{
 		ResponseSchema: "CampaignStats",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.campaigns.unschedule",
@@ -834,6 +893,7 @@ var Operations = []Operation{
 		ResponseSchema: "Campaign",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.campaigns.update",
@@ -848,6 +908,7 @@ var Operations = []Operation{
 		ResponseSchema: "Campaign",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.campaigns.validate",
@@ -862,6 +923,7 @@ var Operations = []Operation{
 		ResponseSchema: "",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.cancelBatch",
@@ -876,6 +938,7 @@ var Operations = []Operation{
 		ResponseSchema: "Batch",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.domains.create",
@@ -890,6 +953,7 @@ var Operations = []Operation{
 		ResponseSchema: "Domain",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.domains.createSender",
@@ -904,6 +968,7 @@ var Operations = []Operation{
 		ResponseSchema: "Sender",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.domains.delete",
@@ -918,6 +983,7 @@ var Operations = []Operation{
 		ResponseSchema: "",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.domains.deleteSender",
@@ -932,6 +998,7 @@ var Operations = []Operation{
 		ResponseSchema: "",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.domains.diagnose",
@@ -946,6 +1013,7 @@ var Operations = []Operation{
 		ResponseSchema: "DomainDiagnosis",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.domains.get",
@@ -960,6 +1028,7 @@ var Operations = []Operation{
 		ResponseSchema: "Domain",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.domains.getSender",
@@ -974,6 +1043,7 @@ var Operations = []Operation{
 		ResponseSchema: "Sender",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.domains.list",
@@ -988,6 +1058,7 @@ var Operations = []Operation{
 		ResponseSchema: "",
 		IsList: true,
 		ListItemSchema: "Domain",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.domains.listSenders",
@@ -1002,6 +1073,7 @@ var Operations = []Operation{
 		ResponseSchema: "",
 		IsList: true,
 		ListItemSchema: "Sender",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.domains.update",
@@ -1016,6 +1088,7 @@ var Operations = []Operation{
 		ResponseSchema: "Domain",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.domains.updateSender",
@@ -1030,6 +1103,7 @@ var Operations = []Operation{
 		ResponseSchema: "Sender",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.domains.verify",
@@ -1044,6 +1118,7 @@ var Operations = []Operation{
 		ResponseSchema: "Domain",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.get",
@@ -1058,6 +1133,7 @@ var Operations = []Operation{
 		ResponseSchema: "Email",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.getBatch",
@@ -1072,6 +1148,7 @@ var Operations = []Operation{
 		ResponseSchema: "Batch",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.list",
@@ -1086,6 +1163,7 @@ var Operations = []Operation{
 		ResponseSchema: "",
 		IsList: true,
 		ListItemSchema: "Email",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.listBatches",
@@ -1100,6 +1178,7 @@ var Operations = []Operation{
 		ResponseSchema: "",
 		IsList: true,
 		ListItemSchema: "Batch",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.listEvents",
@@ -1114,6 +1193,7 @@ var Operations = []Operation{
 		ResponseSchema: "",
 		IsList: true,
 		ListItemSchema: "EmailEvent",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.receivedAttachmentUrl",
@@ -1128,6 +1208,7 @@ var Operations = []Operation{
 		ResponseSchema: "ReceivedAttachmentUrl",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.receivedGet",
@@ -1142,6 +1223,7 @@ var Operations = []Operation{
 		ResponseSchema: "ReceivedEmail",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.receivedList",
@@ -1156,6 +1238,7 @@ var Operations = []Operation{
 		ResponseSchema: "",
 		IsList: true,
 		ListItemSchema: "ReceivedEmailSummary",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.receivedRaw",
@@ -1170,6 +1253,7 @@ var Operations = []Operation{
 		ResponseSchema: "ReceivedEmailRaw",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.retry",
@@ -1184,6 +1268,7 @@ var Operations = []Operation{
 		ResponseSchema: "Email",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.send",
@@ -1198,6 +1283,7 @@ var Operations = []Operation{
 		ResponseSchema: "SendResult",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.stats",
@@ -1212,6 +1298,7 @@ var Operations = []Operation{
 		ResponseSchema: "EmailStats",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.templates.create",
@@ -1226,6 +1313,7 @@ var Operations = []Operation{
 		ResponseSchema: "Template",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.templates.delete",
@@ -1240,6 +1328,7 @@ var Operations = []Operation{
 		ResponseSchema: "",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.templates.duplicate",
@@ -1254,6 +1343,7 @@ var Operations = []Operation{
 		ResponseSchema: "Template",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.templates.fromLibrary",
@@ -1268,6 +1358,7 @@ var Operations = []Operation{
 		ResponseSchema: "Template",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.templates.get",
@@ -1282,6 +1373,7 @@ var Operations = []Operation{
 		ResponseSchema: "Template",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.templates.list",
@@ -1296,6 +1388,7 @@ var Operations = []Operation{
 		ResponseSchema: "",
 		IsList: true,
 		ListItemSchema: "Template",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.templates.listVersions",
@@ -1310,6 +1403,7 @@ var Operations = []Operation{
 		ResponseSchema: "",
 		IsList: true,
 		ListItemSchema: "TemplateVersion",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.templates.render",
@@ -1324,6 +1418,7 @@ var Operations = []Operation{
 		ResponseSchema: "TemplateRender",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.templates.restoreVersion",
@@ -1338,6 +1433,7 @@ var Operations = []Operation{
 		ResponseSchema: "Template",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.templates.testSend",
@@ -1352,6 +1448,7 @@ var Operations = []Operation{
 		ResponseSchema: "TemplateTestSendResult",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.templates.update",
@@ -1366,6 +1463,7 @@ var Operations = []Operation{
 		ResponseSchema: "Template",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.templates.usage",
@@ -1380,6 +1478,7 @@ var Operations = []Operation{
 		ResponseSchema: "TemplateUsage",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.threads.delete",
@@ -1394,6 +1493,7 @@ var Operations = []Operation{
 		ResponseSchema: "EmailThreadDeleted",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.threads.get",
@@ -1408,6 +1508,7 @@ var Operations = []Operation{
 		ResponseSchema: "EmailThreadDetail",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.threads.list",
@@ -1422,6 +1523,7 @@ var Operations = []Operation{
 		ResponseSchema: "",
 		IsList: true,
 		ListItemSchema: "EmailThread",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.threads.reply",
@@ -1436,6 +1538,7 @@ var Operations = []Operation{
 		ResponseSchema: "EmailThreadReplyResult",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.topics.create",
@@ -1450,6 +1553,7 @@ var Operations = []Operation{
 		ResponseSchema: "Topic",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.topics.delete",
@@ -1464,6 +1568,7 @@ var Operations = []Operation{
 		ResponseSchema: "",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.topics.get",
@@ -1478,6 +1583,7 @@ var Operations = []Operation{
 		ResponseSchema: "Topic",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.topics.list",
@@ -1492,6 +1598,7 @@ var Operations = []Operation{
 		ResponseSchema: "",
 		IsList: true,
 		ListItemSchema: "Topic",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.topics.listTopics",
@@ -1506,6 +1613,7 @@ var Operations = []Operation{
 		ResponseSchema: "",
 		IsList: true,
 		ListItemSchema: "ContactTopic",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.topics.optOut",
@@ -1520,6 +1628,7 @@ var Operations = []Operation{
 		ResponseSchema: "Job",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.topics.setTopic",
@@ -1534,6 +1643,7 @@ var Operations = []Operation{
 		ResponseSchema: "ContactTopic",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.topics.update",
@@ -1548,6 +1658,7 @@ var Operations = []Operation{
 		ResponseSchema: "Topic",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.topics.updateTopics",
@@ -1562,6 +1673,7 @@ var Operations = []Operation{
 		ResponseSchema: "ContactTopicList",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "email.update",
@@ -1576,6 +1688,7 @@ var Operations = []Operation{
 		ResponseSchema: "Email",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "files.create",
@@ -1590,6 +1703,7 @@ var Operations = []Operation{
 		ResponseSchema: "File",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "files.delete",
@@ -1604,6 +1718,7 @@ var Operations = []Operation{
 		ResponseSchema: "",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "files.get",
@@ -1618,6 +1733,7 @@ var Operations = []Operation{
 		ResponseSchema: "File",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "files.list",
@@ -1632,6 +1748,7 @@ var Operations = []Operation{
 		ResponseSchema: "",
 		IsList: true,
 		ListItemSchema: "File",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "jobs.cancel",
@@ -1646,6 +1763,7 @@ var Operations = []Operation{
 		ResponseSchema: "Job",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "jobs.download",
@@ -1660,6 +1778,7 @@ var Operations = []Operation{
 		ResponseSchema: "JobDownload",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "jobs.get",
@@ -1674,6 +1793,7 @@ var Operations = []Operation{
 		ResponseSchema: "Job",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "jobs.list",
@@ -1688,6 +1808,7 @@ var Operations = []Operation{
 		ResponseSchema: "",
 		IsList: true,
 		ListItemSchema: "Job",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "jobs.retry",
@@ -1702,6 +1823,7 @@ var Operations = []Operation{
 		ResponseSchema: "Job",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "libraryImages.create",
@@ -1716,6 +1838,7 @@ var Operations = []Operation{
 		ResponseSchema: "LibraryImage",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "libraryImages.delete",
@@ -1730,6 +1853,7 @@ var Operations = []Operation{
 		ResponseSchema: "",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "libraryImages.get",
@@ -1744,6 +1868,7 @@ var Operations = []Operation{
 		ResponseSchema: "LibraryImage",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "libraryImages.list",
@@ -1758,6 +1883,7 @@ var Operations = []Operation{
 		ResponseSchema: "",
 		IsList: true,
 		ListItemSchema: "LibraryImage",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "libraryImages.update",
@@ -1772,6 +1898,7 @@ var Operations = []Operation{
 		ResponseSchema: "LibraryImage",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "logs.list",
@@ -1786,6 +1913,397 @@ var Operations = []Operation{
 		ResponseSchema: "",
 		IsList: true,
 		ListItemSchema: "RequestLog",
+		Credential: "workspace",
+	},
+	{
+		OperationID: "organization.planQuotes.confirm",
+		Resource: "planQuotes",
+		Method: "confirm",
+		HTTPMethod: "POST",
+		Path: "/organizations/{id}/workspaces/{workspace_id}/plan-quotes/{quote_id}/confirm",
+		PathParams: []string{"id", "workspace_id", "quote_id"},
+		QueryParams: nil,
+		HasBody: true,
+		RequestSchema: "OrganizationPlanQuoteConfirm",
+		ResponseSchema: "OrganizationPlanQuote",
+		IsList: false,
+		ListItemSchema: "",
+		Credential: "organization",
+	},
+	{
+		OperationID: "organization.planQuotes.create",
+		Resource: "planQuotes",
+		Method: "create",
+		HTTPMethod: "POST",
+		Path: "/organizations/{id}/workspaces/{workspace_id}/plan-quotes",
+		PathParams: []string{"id", "workspace_id"},
+		QueryParams: nil,
+		HasBody: true,
+		RequestSchema: "OrganizationPlanQuoteCreate",
+		ResponseSchema: "OrganizationPlanQuote",
+		IsList: false,
+		ListItemSchema: "",
+		Credential: "organization",
+	},
+	{
+		OperationID: "organization.planQuotes.get",
+		Resource: "planQuotes",
+		Method: "get",
+		HTTPMethod: "GET",
+		Path: "/organizations/{id}/workspaces/{workspace_id}/plan-quotes/{quote_id}",
+		PathParams: []string{"id", "workspace_id", "quote_id"},
+		QueryParams: nil,
+		HasBody: false,
+		RequestSchema: "",
+		ResponseSchema: "OrganizationPlanQuote",
+		IsList: false,
+		ListItemSchema: "",
+		Credential: "organization",
+	},
+	{
+		OperationID: "organization.sharedPlan.addWorkspace",
+		Resource: "sharedPlan",
+		Method: "addWorkspace",
+		HTTPMethod: "PUT",
+		Path: "/organizations/{id}/shared-plan/workspaces/{workspace_id}",
+		PathParams: []string{"id", "workspace_id"},
+		QueryParams: nil,
+		HasBody: true,
+		RequestSchema: "OrganizationSharedPlanWorkspaceAdd",
+		ResponseSchema: "OrganizationSharedPlanWorkspace",
+		IsList: false,
+		ListItemSchema: "",
+		Credential: "organization",
+	},
+	{
+		OperationID: "organization.sharedPlan.get",
+		Resource: "sharedPlan",
+		Method: "get",
+		HTTPMethod: "GET",
+		Path: "/organizations/{id}/shared-plan",
+		PathParams: []string{"id"},
+		QueryParams: nil,
+		HasBody: false,
+		RequestSchema: "",
+		ResponseSchema: "OrganizationSharedPlan",
+		IsList: false,
+		ListItemSchema: "",
+		Credential: "organization",
+	},
+	{
+		OperationID: "organization.sharedPlan.listWorkspaces",
+		Resource: "sharedPlan",
+		Method: "listWorkspaces",
+		HTTPMethod: "GET",
+		Path: "/organizations/{id}/shared-plan/workspaces",
+		PathParams: []string{"id"},
+		QueryParams: nil,
+		HasBody: false,
+		RequestSchema: "",
+		ResponseSchema: "",
+		IsList: true,
+		ListItemSchema: "OrganizationSharedPlanWorkspace",
+		Credential: "organization",
+	},
+	{
+		OperationID: "organization.sharedPlan.removeWorkspace",
+		Resource: "sharedPlan",
+		Method: "removeWorkspace",
+		HTTPMethod: "DELETE",
+		Path: "/organizations/{id}/shared-plan/workspaces/{workspace_id}",
+		PathParams: []string{"id", "workspace_id"},
+		QueryParams: nil,
+		HasBody: false,
+		RequestSchema: "",
+		ResponseSchema: "OrganizationSharedPlanRemoval",
+		IsList: false,
+		ListItemSchema: "",
+		Credential: "organization",
+	},
+	{
+		OperationID: "organization.sharedPlan.updateWorkspace",
+		Resource: "sharedPlan",
+		Method: "updateWorkspace",
+		HTTPMethod: "PATCH",
+		Path: "/organizations/{id}/shared-plan/workspaces/{workspace_id}",
+		PathParams: []string{"id", "workspace_id"},
+		QueryParams: nil,
+		HasBody: true,
+		RequestSchema: "OrganizationSharedPlanWorkspaceUpdate",
+		ResponseSchema: "OrganizationSharedPlanWorkspace",
+		IsList: false,
+		ListItemSchema: "",
+		Credential: "organization",
+	},
+	{
+		OperationID: "organization.usage.list",
+		Resource: "usage",
+		Method: "list",
+		HTTPMethod: "GET",
+		Path: "/organizations/{id}/usage",
+		PathParams: []string{"id"},
+		QueryParams: []string{"period", "limit", "after", "before", "external_id"},
+		HasBody: false,
+		RequestSchema: "",
+		ResponseSchema: "",
+		IsList: true,
+		ListItemSchema: "OrganizationWorkspaceUsage",
+		Credential: "organization",
+	},
+	{
+		OperationID: "organization.webhooks.create",
+		Resource: "webhooks",
+		Method: "create",
+		HTTPMethod: "POST",
+		Path: "/organizations/{id}/webhooks",
+		PathParams: []string{"id"},
+		QueryParams: nil,
+		HasBody: true,
+		RequestSchema: "WebhookCreate",
+		ResponseSchema: "WebhookCreated",
+		IsList: false,
+		ListItemSchema: "",
+		Credential: "organization",
+	},
+	{
+		OperationID: "organization.webhooks.delete",
+		Resource: "webhooks",
+		Method: "delete",
+		HTTPMethod: "DELETE",
+		Path: "/organizations/{id}/webhooks/{webhook_id}",
+		PathParams: []string{"id", "webhook_id"},
+		QueryParams: nil,
+		HasBody: false,
+		RequestSchema: "",
+		ResponseSchema: "",
+		IsList: false,
+		ListItemSchema: "",
+		Credential: "organization",
+	},
+	{
+		OperationID: "organization.webhooks.flush",
+		Resource: "webhooks",
+		Method: "flush",
+		HTTPMethod: "POST",
+		Path: "/organizations/{id}/webhooks/{webhook_id}/flush",
+		PathParams: []string{"id", "webhook_id"},
+		QueryParams: nil,
+		HasBody: true,
+		RequestSchema: "WebhookFlush",
+		ResponseSchema: "WebhookFlushResult",
+		IsList: false,
+		ListItemSchema: "",
+		Credential: "organization",
+	},
+	{
+		OperationID: "organization.webhooks.get",
+		Resource: "webhooks",
+		Method: "get",
+		HTTPMethod: "GET",
+		Path: "/organizations/{id}/webhooks/{webhook_id}",
+		PathParams: []string{"id", "webhook_id"},
+		QueryParams: nil,
+		HasBody: false,
+		RequestSchema: "",
+		ResponseSchema: "Webhook",
+		IsList: false,
+		ListItemSchema: "",
+		Credential: "organization",
+	},
+	{
+		OperationID: "organization.webhooks.list",
+		Resource: "webhooks",
+		Method: "list",
+		HTTPMethod: "GET",
+		Path: "/organizations/{id}/webhooks",
+		PathParams: []string{"id"},
+		QueryParams: []string{"limit", "after", "before"},
+		HasBody: false,
+		RequestSchema: "",
+		ResponseSchema: "",
+		IsList: true,
+		ListItemSchema: "Webhook",
+		Credential: "organization",
+	},
+	{
+		OperationID: "organization.webhooks.listDeliveries",
+		Resource: "webhooks",
+		Method: "listDeliveries",
+		HTTPMethod: "GET",
+		Path: "/organizations/{id}/webhooks/{webhook_id}/deliveries",
+		PathParams: []string{"id", "webhook_id"},
+		QueryParams: []string{"limit", "after", "before", "status", "event_type", "workspace_id", "external_id"},
+		HasBody: false,
+		RequestSchema: "",
+		ResponseSchema: "",
+		IsList: true,
+		ListItemSchema: "OrganizationWebhookDelivery",
+		Credential: "organization",
+	},
+	{
+		OperationID: "organization.webhooks.replayDelivery",
+		Resource: "webhooks",
+		Method: "replayDelivery",
+		HTTPMethod: "POST",
+		Path: "/organizations/{id}/webhooks/{webhook_id}/deliveries/{delivery}/replay",
+		PathParams: []string{"id", "webhook_id", "delivery"},
+		QueryParams: nil,
+		HasBody: false,
+		RequestSchema: "",
+		ResponseSchema: "WebhookDeliveryReplay",
+		IsList: false,
+		ListItemSchema: "",
+		Credential: "organization",
+	},
+	{
+		OperationID: "organization.webhooks.rotateSecret",
+		Resource: "webhooks",
+		Method: "rotateSecret",
+		HTTPMethod: "POST",
+		Path: "/organizations/{id}/webhooks/{webhook_id}/rotate-secret",
+		PathParams: []string{"id", "webhook_id"},
+		QueryParams: nil,
+		HasBody: false,
+		RequestSchema: "",
+		ResponseSchema: "WebhookSecretRotated",
+		IsList: false,
+		ListItemSchema: "",
+		Credential: "organization",
+	},
+	{
+		OperationID: "organization.webhooks.test",
+		Resource: "webhooks",
+		Method: "test",
+		HTTPMethod: "POST",
+		Path: "/organizations/{id}/webhooks/{webhook_id}/test",
+		PathParams: []string{"id", "webhook_id"},
+		QueryParams: nil,
+		HasBody: false,
+		RequestSchema: "",
+		ResponseSchema: "WebhookTestResult",
+		IsList: false,
+		ListItemSchema: "",
+		Credential: "organization",
+	},
+	{
+		OperationID: "organization.webhooks.update",
+		Resource: "webhooks",
+		Method: "update",
+		HTTPMethod: "PATCH",
+		Path: "/organizations/{id}/webhooks/{webhook_id}",
+		PathParams: []string{"id", "webhook_id"},
+		QueryParams: nil,
+		HasBody: true,
+		RequestSchema: "WebhookUpdate",
+		ResponseSchema: "Webhook",
+		IsList: false,
+		ListItemSchema: "",
+		Credential: "organization",
+	},
+	{
+		OperationID: "organization.workspaceKeys.create",
+		Resource: "workspaceKeys",
+		Method: "create",
+		HTTPMethod: "POST",
+		Path: "/organizations/{id}/workspaces/{workspace_id}/api-keys",
+		PathParams: []string{"id", "workspace_id"},
+		QueryParams: nil,
+		HasBody: true,
+		RequestSchema: "WorkspaceKeyMint",
+		ResponseSchema: "MintedWorkspaceKey",
+		IsList: false,
+		ListItemSchema: "",
+		Credential: "organization",
+	},
+	{
+		OperationID: "organization.workspaces.close",
+		Resource: "workspaces",
+		Method: "close",
+		HTTPMethod: "POST",
+		Path: "/organizations/{id}/workspaces/{workspace_id}/close",
+		PathParams: []string{"id", "workspace_id"},
+		QueryParams: nil,
+		HasBody: false,
+		RequestSchema: "",
+		ResponseSchema: "OrganizationWorkspace",
+		IsList: false,
+		ListItemSchema: "",
+		Credential: "organization",
+	},
+	{
+		OperationID: "organization.workspaces.create",
+		Resource: "workspaces",
+		Method: "create",
+		HTTPMethod: "POST",
+		Path: "/organizations/{id}/workspaces",
+		PathParams: []string{"id"},
+		QueryParams: nil,
+		HasBody: true,
+		RequestSchema: "OrganizationWorkspaceCreate",
+		ResponseSchema: "OrganizationWorkspace",
+		IsList: false,
+		ListItemSchema: "",
+		Credential: "organization",
+	},
+	{
+		OperationID: "organization.workspaces.get",
+		Resource: "workspaces",
+		Method: "get",
+		HTTPMethod: "GET",
+		Path: "/organizations/{id}/workspaces/{workspace_id}",
+		PathParams: []string{"id", "workspace_id"},
+		QueryParams: nil,
+		HasBody: false,
+		RequestSchema: "",
+		ResponseSchema: "OrganizationWorkspace",
+		IsList: false,
+		ListItemSchema: "",
+		Credential: "organization",
+	},
+	{
+		OperationID: "organization.workspaces.list",
+		Resource: "workspaces",
+		Method: "list",
+		HTTPMethod: "GET",
+		Path: "/organizations/{id}/workspaces",
+		PathParams: []string{"id"},
+		QueryParams: []string{"limit", "after", "before", "external_id"},
+		HasBody: false,
+		RequestSchema: "",
+		ResponseSchema: "",
+		IsList: true,
+		ListItemSchema: "OrganizationWorkspace",
+		Credential: "organization",
+	},
+	{
+		OperationID: "organization.workspaces.restore",
+		Resource: "workspaces",
+		Method: "restore",
+		HTTPMethod: "POST",
+		Path: "/organizations/{id}/workspaces/{workspace_id}/restore",
+		PathParams: []string{"id", "workspace_id"},
+		QueryParams: nil,
+		HasBody: false,
+		RequestSchema: "",
+		ResponseSchema: "OrganizationWorkspace",
+		IsList: false,
+		ListItemSchema: "",
+		Credential: "organization",
+	},
+	{
+		OperationID: "organization.workspaces.update",
+		Resource: "workspaces",
+		Method: "update",
+		HTTPMethod: "PATCH",
+		Path: "/organizations/{id}/workspaces/{workspace_id}",
+		PathParams: []string{"id", "workspace_id"},
+		QueryParams: nil,
+		HasBody: true,
+		RequestSchema: "OrganizationWorkspaceUpdate",
+		ResponseSchema: "OrganizationWorkspace",
+		IsList: false,
+		ListItemSchema: "",
+		Credential: "organization",
 	},
 	{
 		OperationID: "segments.addMember",
@@ -1800,6 +2318,7 @@ var Operations = []Operation{
 		ResponseSchema: "SegmentMember",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "segments.allContacts",
@@ -1814,6 +2333,7 @@ var Operations = []Operation{
 		ResponseSchema: "Segment",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "segments.create",
@@ -1828,6 +2348,7 @@ var Operations = []Operation{
 		ResponseSchema: "Segment",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "segments.delete",
@@ -1842,6 +2363,7 @@ var Operations = []Operation{
 		ResponseSchema: "",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "segments.get",
@@ -1856,6 +2378,7 @@ var Operations = []Operation{
 		ResponseSchema: "Segment",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "segments.list",
@@ -1870,6 +2393,7 @@ var Operations = []Operation{
 		ResponseSchema: "",
 		IsList: true,
 		ListItemSchema: "Segment",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "segments.listMembers",
@@ -1884,6 +2408,7 @@ var Operations = []Operation{
 		ResponseSchema: "",
 		IsList: true,
 		ListItemSchema: "SegmentMember",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "segments.preview",
@@ -1898,6 +2423,7 @@ var Operations = []Operation{
 		ResponseSchema: "SegmentPreview",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "segments.previewFilter",
@@ -1912,6 +2438,7 @@ var Operations = []Operation{
 		ResponseSchema: "SegmentPreview",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "segments.removeMember",
@@ -1926,6 +2453,7 @@ var Operations = []Operation{
 		ResponseSchema: "",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "segments.update",
@@ -1940,6 +2468,7 @@ var Operations = []Operation{
 		ResponseSchema: "Segment",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "segments.updateMember",
@@ -1954,6 +2483,7 @@ var Operations = []Operation{
 		ResponseSchema: "SegmentMember",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.addBrandDocument",
@@ -1968,6 +2498,7 @@ var Operations = []Operation{
 		ResponseSchema: "SmsBrandDocument",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.addContact",
@@ -1982,6 +2513,7 @@ var Operations = []Operation{
 		ResponseSchema: "Contact",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.addJoinKeyword",
@@ -1996,6 +2528,7 @@ var Operations = []Operation{
 		ResponseSchema: "SmsJoinKeywordCreated",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.billing.listResources",
@@ -2010,6 +2543,7 @@ var Operations = []Operation{
 		ResponseSchema: "",
 		IsList: true,
 		ListItemSchema: "SmsBillableResource",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.brandDocumentUrl",
@@ -2024,6 +2558,7 @@ var Operations = []Operation{
 		ResponseSchema: "SmsBrandDocumentUrl",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.brands",
@@ -2038,6 +2573,7 @@ var Operations = []Operation{
 		ResponseSchema: "",
 		IsList: true,
 		ListItemSchema: "SmsBrand",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.campaigns.cancel",
@@ -2052,6 +2588,7 @@ var Operations = []Operation{
 		ResponseSchema: "SmsCampaign",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.campaigns.create",
@@ -2066,6 +2603,7 @@ var Operations = []Operation{
 		ResponseSchema: "SmsCampaign",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.campaigns.delete",
@@ -2080,6 +2618,7 @@ var Operations = []Operation{
 		ResponseSchema: "",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.campaigns.duplicate",
@@ -2094,6 +2633,7 @@ var Operations = []Operation{
 		ResponseSchema: "SmsCampaign",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.campaigns.get",
@@ -2108,6 +2648,7 @@ var Operations = []Operation{
 		ResponseSchema: "SmsCampaign",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.campaigns.list",
@@ -2122,6 +2663,7 @@ var Operations = []Operation{
 		ResponseSchema: "",
 		IsList: true,
 		ListItemSchema: "SmsCampaign",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.campaigns.listRecipients",
@@ -2136,6 +2678,7 @@ var Operations = []Operation{
 		ResponseSchema: "",
 		IsList: true,
 		ListItemSchema: "SmsCampaignRecipient",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.campaigns.pause",
@@ -2150,6 +2693,7 @@ var Operations = []Operation{
 		ResponseSchema: "SmsCampaign",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.campaigns.reschedule",
@@ -2164,6 +2708,7 @@ var Operations = []Operation{
 		ResponseSchema: "SmsCampaign",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.campaigns.resume",
@@ -2178,6 +2723,7 @@ var Operations = []Operation{
 		ResponseSchema: "SmsCampaign",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.campaigns.send",
@@ -2192,6 +2738,7 @@ var Operations = []Operation{
 		ResponseSchema: "SmsCampaign",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.campaigns.unschedule",
@@ -2206,6 +2753,7 @@ var Operations = []Operation{
 		ResponseSchema: "SmsCampaign",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.campaigns.update",
@@ -2220,6 +2768,7 @@ var Operations = []Operation{
 		ResponseSchema: "SmsCampaign",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.campaigns.validate",
@@ -2234,6 +2783,7 @@ var Operations = []Operation{
 		ResponseSchema: "SmsCampaignValidation",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.consentSetups.list",
@@ -2248,6 +2798,7 @@ var Operations = []Operation{
 		ResponseSchema: "",
 		IsList: true,
 		ListItemSchema: "SmsConsentSetup",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.createBrand",
@@ -2262,6 +2813,7 @@ var Operations = []Operation{
 		ResponseSchema: "SmsBrand",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.get",
@@ -2276,6 +2828,7 @@ var Operations = []Operation{
 		ResponseSchema: "Sms",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.getBrand",
@@ -2290,6 +2843,7 @@ var Operations = []Operation{
 		ResponseSchema: "SmsBrand",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.getBrandDocument",
@@ -2304,6 +2858,7 @@ var Operations = []Operation{
 		ResponseSchema: "SmsBrandDocument",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.getNumber",
@@ -2318,6 +2873,7 @@ var Operations = []Operation{
 		ResponseSchema: "SmsNumber",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.list",
@@ -2326,12 +2882,13 @@ var Operations = []Operation{
 		HTTPMethod: "GET",
 		Path: "/sms",
 		PathParams: nil,
-		QueryParams: []string{"limit", "after", "before", "direction", "status", "from", "to", "participant", "contact_id", "campaign_id", "created_after", "created_before", "sender_id", "q", "type"},
+		QueryParams: []string{"limit", "after", "before", "direction", "status", "from", "to", "participant", "contact_id", "campaign_id", "created_after", "created_before", "sender_id", "q", "type", "tag"},
 		HasBody: false,
 		RequestSchema: "",
 		ResponseSchema: "",
 		IsList: true,
 		ListItemSchema: "Sms",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.listBrandDocuments",
@@ -2346,6 +2903,7 @@ var Operations = []Operation{
 		ResponseSchema: "",
 		IsList: true,
 		ListItemSchema: "SmsBrandDocument",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.listJoinKeywords",
@@ -2360,6 +2918,7 @@ var Operations = []Operation{
 		ResponseSchema: "SmsJoinKeywordList",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.messagingPrograms.create",
@@ -2374,6 +2933,7 @@ var Operations = []Operation{
 		ResponseSchema: "SmsMessagingProgram",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.messagingPrograms.delete",
@@ -2388,6 +2948,7 @@ var Operations = []Operation{
 		ResponseSchema: "",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.messagingPrograms.duplicate",
@@ -2402,6 +2963,7 @@ var Operations = []Operation{
 		ResponseSchema: "SmsMessagingProgram",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.messagingPrograms.get",
@@ -2416,6 +2978,7 @@ var Operations = []Operation{
 		ResponseSchema: "SmsMessagingProgram",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.messagingPrograms.list",
@@ -2430,6 +2993,7 @@ var Operations = []Operation{
 		ResponseSchema: "",
 		IsList: true,
 		ListItemSchema: "SmsMessagingProgram",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.messagingPrograms.update",
@@ -2444,6 +3008,7 @@ var Operations = []Operation{
 		ResponseSchema: "SmsMessagingProgram",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.numbers",
@@ -2458,6 +3023,7 @@ var Operations = []Operation{
 		ResponseSchema: "",
 		IsList: true,
 		ListItemSchema: "SmsNumber",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.quotes.confirm",
@@ -2472,6 +3038,7 @@ var Operations = []Operation{
 		ResponseSchema: "SmsQuote",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.quotes.create",
@@ -2486,6 +3053,7 @@ var Operations = []Operation{
 		ResponseSchema: "SmsQuote",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.quotes.get",
@@ -2500,6 +3068,7 @@ var Operations = []Operation{
 		ResponseSchema: "SmsQuote",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.recordSmsConsent",
@@ -2514,6 +3083,7 @@ var Operations = []Operation{
 		ResponseSchema: "SmsConsentRecorded",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.registrations.get",
@@ -2528,6 +3098,7 @@ var Operations = []Operation{
 		ResponseSchema: "SmsRegistration",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.registrations.list",
@@ -2542,6 +3113,7 @@ var Operations = []Operation{
 		ResponseSchema: "",
 		IsList: true,
 		ListItemSchema: "SmsRegistration",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.registrations.remove",
@@ -2556,6 +3128,7 @@ var Operations = []Operation{
 		ResponseSchema: "SmsRegistration",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.registrations.replace",
@@ -2570,6 +3143,7 @@ var Operations = []Operation{
 		ResponseSchema: "SmsRegistration",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.registrations.requestNumber",
@@ -2584,6 +3158,7 @@ var Operations = []Operation{
 		ResponseSchema: "SmsNumberRequest",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.registrations.resubmit",
@@ -2598,6 +3173,7 @@ var Operations = []Operation{
 		ResponseSchema: "SmsRegistrationResubmission",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.releaseNumber",
@@ -2612,6 +3188,7 @@ var Operations = []Operation{
 		ResponseSchema: "SmsNumber",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.removeBrandDocument",
@@ -2626,6 +3203,7 @@ var Operations = []Operation{
 		ResponseSchema: "SmsBrandDocumentDeleted",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.removeJoinKeyword",
@@ -2640,6 +3218,7 @@ var Operations = []Operation{
 		ResponseSchema: "",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.requestSmsOptIn",
@@ -2654,6 +3233,7 @@ var Operations = []Operation{
 		ResponseSchema: "Sms",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.resubmitNumber",
@@ -2668,6 +3248,7 @@ var Operations = []Operation{
 		ResponseSchema: "SmsNumberResubmission",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.send",
@@ -2682,6 +3263,7 @@ var Operations = []Operation{
 		ResponseSchema: "Sms",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.smsConsent",
@@ -2696,6 +3278,7 @@ var Operations = []Operation{
 		ResponseSchema: "SmsConsent",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.stats",
@@ -2710,6 +3293,7 @@ var Operations = []Operation{
 		ResponseSchema: "SmsStats",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.templates.create",
@@ -2724,6 +3308,7 @@ var Operations = []Operation{
 		ResponseSchema: "SmsTemplate",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.templates.delete",
@@ -2738,6 +3323,7 @@ var Operations = []Operation{
 		ResponseSchema: "",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.templates.get",
@@ -2752,6 +3338,7 @@ var Operations = []Operation{
 		ResponseSchema: "SmsTemplate",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.templates.list",
@@ -2766,6 +3353,7 @@ var Operations = []Operation{
 		ResponseSchema: "",
 		IsList: true,
 		ListItemSchema: "SmsTemplate",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.templates.testSend",
@@ -2780,6 +3368,7 @@ var Operations = []Operation{
 		ResponseSchema: "SmsTemplateTestSendResult",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.templates.update",
@@ -2794,6 +3383,7 @@ var Operations = []Operation{
 		ResponseSchema: "SmsTemplate",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.templates.usage",
@@ -2808,6 +3398,7 @@ var Operations = []Operation{
 		ResponseSchema: "SmsTemplateUsage",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.testDestinations.delete",
@@ -2822,6 +3413,7 @@ var Operations = []Operation{
 		ResponseSchema: "",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.testDestinations.list",
@@ -2836,6 +3428,7 @@ var Operations = []Operation{
 		ResponseSchema: "",
 		IsList: true,
 		ListItemSchema: "SmsTestDestination",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.topics.create",
@@ -2850,6 +3443,7 @@ var Operations = []Operation{
 		ResponseSchema: "Topic",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.topics.delete",
@@ -2864,6 +3458,7 @@ var Operations = []Operation{
 		ResponseSchema: "",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.topics.get",
@@ -2878,6 +3473,7 @@ var Operations = []Operation{
 		ResponseSchema: "Topic",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.topics.list",
@@ -2892,6 +3488,7 @@ var Operations = []Operation{
 		ResponseSchema: "",
 		IsList: true,
 		ListItemSchema: "Topic",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.topics.optOut",
@@ -2906,6 +3503,7 @@ var Operations = []Operation{
 		ResponseSchema: "Job",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.topics.update",
@@ -2920,6 +3518,7 @@ var Operations = []Operation{
 		ResponseSchema: "Topic",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.update",
@@ -2934,6 +3533,7 @@ var Operations = []Operation{
 		ResponseSchema: "Sms",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "sms.updateBrand",
@@ -2948,6 +3548,37 @@ var Operations = []Operation{
 		ResponseSchema: "SmsBrand",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
+	},
+	{
+		OperationID: "spendCaps.get",
+		Resource: "spendCaps",
+		Method: "get",
+		HTTPMethod: "GET",
+		Path: "/spend-caps",
+		PathParams: nil,
+		QueryParams: nil,
+		HasBody: false,
+		RequestSchema: "",
+		ResponseSchema: "SpendCaps",
+		IsList: false,
+		ListItemSchema: "",
+		Credential: "workspace",
+	},
+	{
+		OperationID: "spendCaps.update",
+		Resource: "spendCaps",
+		Method: "update",
+		HTTPMethod: "PATCH",
+		Path: "/spend-caps",
+		PathParams: nil,
+		QueryParams: nil,
+		HasBody: true,
+		RequestSchema: "SpendCapsUpdate",
+		ResponseSchema: "SpendCaps",
+		IsList: false,
+		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "suppressions.create",
@@ -2962,6 +3593,7 @@ var Operations = []Operation{
 		ResponseSchema: "",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "suppressions.delete",
@@ -2976,6 +3608,7 @@ var Operations = []Operation{
 		ResponseSchema: "",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "suppressions.get",
@@ -2990,6 +3623,7 @@ var Operations = []Operation{
 		ResponseSchema: "Suppression",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "suppressions.list",
@@ -3004,6 +3638,7 @@ var Operations = []Operation{
 		ResponseSchema: "",
 		IsList: true,
 		ListItemSchema: "Suppression",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "usage.get",
@@ -3018,6 +3653,7 @@ var Operations = []Operation{
 		ResponseSchema: "Usage",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "webhooks.create",
@@ -3032,6 +3668,7 @@ var Operations = []Operation{
 		ResponseSchema: "WebhookCreated",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "webhooks.delete",
@@ -3046,6 +3683,7 @@ var Operations = []Operation{
 		ResponseSchema: "",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "webhooks.flush",
@@ -3060,6 +3698,7 @@ var Operations = []Operation{
 		ResponseSchema: "WebhookFlushResult",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "webhooks.get",
@@ -3074,6 +3713,7 @@ var Operations = []Operation{
 		ResponseSchema: "Webhook",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "webhooks.list",
@@ -3088,6 +3728,7 @@ var Operations = []Operation{
 		ResponseSchema: "",
 		IsList: true,
 		ListItemSchema: "Webhook",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "webhooks.listDeliveries",
@@ -3102,6 +3743,7 @@ var Operations = []Operation{
 		ResponseSchema: "",
 		IsList: true,
 		ListItemSchema: "WebhookDelivery",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "webhooks.replayDelivery",
@@ -3116,6 +3758,7 @@ var Operations = []Operation{
 		ResponseSchema: "WebhookDeliveryReplay",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "webhooks.rotateSecret",
@@ -3130,6 +3773,7 @@ var Operations = []Operation{
 		ResponseSchema: "WebhookSecretRotated",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "webhooks.test",
@@ -3144,6 +3788,7 @@ var Operations = []Operation{
 		ResponseSchema: "WebhookTestResult",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "webhooks.update",
@@ -3158,6 +3803,7 @@ var Operations = []Operation{
 		ResponseSchema: "Webhook",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "workspace.listActivity",
@@ -3172,6 +3818,7 @@ var Operations = []Operation{
 		ResponseSchema: "",
 		IsList: true,
 		ListItemSchema: "Activity",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "workspace.removeImage",
@@ -3186,6 +3833,7 @@ var Operations = []Operation{
 		ResponseSchema: "Workspace",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "workspace.setImage",
@@ -3200,6 +3848,7 @@ var Operations = []Operation{
 		ResponseSchema: "Workspace",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "workspace.update",
@@ -3214,6 +3863,7 @@ var Operations = []Operation{
 		ResponseSchema: "Workspace",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 	{
 		OperationID: "workspace.whoami",
@@ -3228,5 +3878,6 @@ var Operations = []Operation{
 		ResponseSchema: "Whoami",
 		IsList: false,
 		ListItemSchema: "",
+		Credential: "workspace",
 	},
 }

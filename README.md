@@ -17,6 +17,34 @@ data, err := client.Email.Send(ctx, map[string]any{
 
 `client.Sms` is the SMS channel (Send, Get, List, Brands, Numbers, contact SMS consent). Available on paid plans: on the free plan `Send` returns a `403` with code `limit_reached`, while the reads keep working.
 
+## Organization keys
+
+A platform that gives each of its customers a workspace uses an organization key (`ok_live_…`) with the second client, `OrganizationClient`. It takes the key and the organization's id (`org_…`), and reads `UNITPOST_ORG_KEY` and `UNITPOST_ORGANIZATION_ID` when you leave them out (like `New`, it panics with a `*unitpost.Error`, code `missing_api_key` or `missing_organization_id`, when one is missing):
+
+```go
+org := unitpost.NewOrganizationWithOptions(unitpost.OrganizationOptions{
+    APIKey:         os.Getenv("UNITPOST_ORG_KEY"),
+    OrganizationID: os.Getenv("UNITPOST_ORGANIZATION_ID"),
+})
+
+ws, err := org.Workspaces.Create(ctx, map[string]any{"name": "Acme Bakery", "external_id": "cust_42"})
+minted, err := org.WorkspaceKeys.Create(ctx, ws.(map[string]any)["id"].(string), map[string]any{"name": "Production", "scope": "sending"})
+
+// Work inside that workspace with its own key.
+acme := unitpost.NewWithOptions(unitpost.Options{APIKey: minted.(map[string]any)["key"].(string)})
+```
+
+| Field | Covers |
+| --- | --- |
+| `Workspaces` | `List` (`external_id` filter), `ListAll`, `Create` (takes `WithIdempotencyKey`), `Get`, `Update`, `Close`, `Restore` |
+| `WorkspaceKeys` | `Create(ctx, workspaceID, body)`: mint a workspace key; the secret is in that answer only |
+| `Webhooks` | The organization's endpoints (events from every workspace, each with `workspace_id` and `external_id`): `List`, `ListAll`, `Create`, `Get`, `Update`, `Delete`, `RotateSecret`, `Test`, `ListDeliveries` (needs `organizations:write`), `ListAllDeliveries`, `ReplayDelivery`, `Flush`, `Verify` |
+| `Usage` | `List` (`"period"`), `ListAll`: usage per workspace for its billing period |
+| `PlanQuotes` | Change a workspace's plan: `Create` prices it, `Get`, `Confirm` applies and charges it (takes `WithIdempotencyKey`) |
+| `SharedPlan` | The organization's shared plan: `Get`, `ListWorkspaces`, `AddWorkspace`, `UpdateWorkspace` (its cap), `RemoveWorkspace` (adding and removing take `WithIdempotencyKey`) |
+
+Each client takes one kind of key: the organization client only calls `/organizations/{id}/…` routes, and the API answers `401` to an organization key on any other route. An Owner or Admin makes the key in the dashboard under Organization → API.
+
 ## Idempotency
 
 `Email.Send`, `Email.Batch` and `Sms.Send` always carry an `Idempotency-Key`: the SDK mints one per call so its own automatic retries can never send twice. Pass your own key to dedupe across separate calls (for example a job retried after your process crashed): the API replays the first result for the same key for 24 hours instead of sending again.

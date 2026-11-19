@@ -9,6 +9,8 @@ change that bumps the version (docs/sdk/RELEASING.md).
 
 ## Unreleased
 
+## 0.5.0
+
 - `OrganizationClient` gains `SharedPlan`: `Get`, `ListWorkspaces`, `AddWorkspace`, `UpdateWorkspace`, `RemoveWorkspace` (the organization's shared plan; adding and removing take an optional `WithIdempotencyKey`, or the SDK mints one). Reads need `organizations:read`; the three writes need `organizations:billing`. Buying, upgrading or ending the shared plan stays in the dashboard.
 - SMS tags: `"tags": []map[string]any{{"name": …, "value": …}}` in `Sms.Send`'s body (up to 10) and the `"tag"` filter on `Sms.List` / `Sms.ListAll` (`tag` is `name:value`; several comma-separated must all match; received texts have none). `Sms` carries `Tags` (`SmsTagsItem`).
 - `OrganizationClient` iterators: `Webhooks.ListAll`, `Webhooks.ListAllDeliveries(webhookID, …)` and `Usage.ListAll` (pages by `workspace_id`). The delivery log needs `organizations:write`.

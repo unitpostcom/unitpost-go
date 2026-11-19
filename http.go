@@ -21,7 +21,7 @@ import (
 )
 
 const (
-	SDKVersion     = "0.4.0"
+	SDKVersion     = "0.5.0"
 	DefaultBaseURL = "https://www.unitpost.com"
 )
 

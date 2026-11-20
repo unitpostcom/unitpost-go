@@ -820,6 +820,19 @@ func (x *Contacts) Export(ctx context.Context, body any) (any, error) {
 	return x.http.request(ctx, "POST", "/contacts/export", nil, body, "")
 }
 
+// SetField sets one custom field to the same value on many contacts, as the
+// Contacts page's Set field does, as a background job (202, the job): "key",
+// "value" (typed against the field; nil clears it), optional "only_empty", and
+// exactly one of {"contact_ids": [...]} or {"emails": [...]} (up to 1,000,
+// each a contact of this workspace) or {"segment_id": "..."} (every member,
+// however many; also needs segments:read). Each contact whose value changes
+// gets contact.updated; consent is never touched. Follow it with Jobs.Get.
+// Pass WithIdempotencyKey so a retry answers the same job; without it the SDK
+// mints a key per call.
+func (x *Contacts) SetField(ctx context.Context, body any, opts ...RequestOption) (any, error) {
+	return x.http.request(ctx, "POST", "/contacts/set-field", nil, body, idempotencyKeyFrom(opts))
+}
+
 // ContactFields are custom contact attributes.
 type ContactFields struct{ http *httpClient }
 
